@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($action) {
         case 'getSubscriptions':
             try {
-                $stmt = $pdo->query("SELECT *, ROW_NUMBER() OVER (ORDER BY nextdate ASC) as id FROM subscription ORDER BY nextdate ASC");
+                $stmt = $pdo->query("SELECT * FROM subscription ORDER BY nextdate ASC");
                 $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $subscriptions]);
             } catch(PDOException $e) {
@@ -46,8 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         case 'updateSubscription':
             try {
-                $originalName = $_POST['originalName'] ?? '';
-                $originalNextdate = $_POST['originalNextdate'] ?? '';
                 $name = $_POST['name'] ?? '';
                 $nextdate = $_POST['nextdate'] ?? '';
                 $price = $_POST['price'] ?? null;
@@ -55,27 +53,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $site = $_POST['site'] ?? '';
                 $note = $_POST['note'] ?? '';
                 $account = $_POST['account'] ?? '';
+                $id = $_POST['id'] ?? '';
                 
-                $stmt = $pdo->prepare("UPDATE subscription SET name=?, nextdate=?, price=?, site=?, note=?, account=? WHERE name=? AND nextdate=?");
-                $stmt->execute([$name, $nextdate, $price, $site, $note, $account, $originalName, $originalNextdate]);
+                if (empty($id)) {
+                    throw new Exception('缺少必要的 ID 參數');
+                }
+                
+                $stmt = $pdo->prepare("UPDATE subscription SET name=?, nextdate=?, price=?, site=?, note=?, account=? WHERE id=?");
+                $stmt->execute([$name, $nextdate, $price, $site, $note, $account, $id]);
                 
                 echo json_encode(['success' => true, 'message' => '訂閱更新成功']);
             } catch(PDOException $e) {
                 echo json_encode(['success' => false, 'message' => '更新訂閱失敗: ' . $e->getMessage()]);
+            } catch(Exception $e) {
+                echo json_encode(['success' => false, 'message' => $e->getMessage()]);
             }
             break;
             
         case 'deleteSubscription':
             try {
-                $name = $_POST['name'] ?? '';
-                $nextdate = $_POST['nextdate'] ?? '';
+                $id = $_POST['id'] ?? '';
                 
-                $stmt = $pdo->prepare("DELETE FROM subscription WHERE name=? AND nextdate=?");
-                $stmt->execute([$name, $nextdate]);
+                if (empty($id)) {
+                    throw new Exception('缺少必要的 ID 參數');
+                }
+                
+                $stmt = $pdo->prepare("DELETE FROM subscription WHERE id=?");
+                $stmt->execute([$id]);
                 
                 echo json_encode(['success' => true, 'message' => '訂閱刪除成功']);
             } catch(PDOException $e) {
                 echo json_encode(['success' => false, 'message' => '刪除訂閱失敗: ' . $e->getMessage()]);
+            } catch(Exception $e) {
+                echo json_encode(['success' => false, 'message' => $e->getMessage()]);
             }
             break;
             

@@ -21,26 +21,30 @@ USE `goldshoot0720`;
 
 -- 傾印  資料表 goldshoot0720.food 結構
 CREATE TABLE IF NOT EXISTS `food` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` text,
   `todate` date DEFAULT NULL,
   `amount` int DEFAULT NULL,
   `photo` text,
   `price` int DEFAULT NULL,
   `shop` text,
-  `photohash` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `photohash` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 取消選取資料匯出。
 
 -- 傾印  資料表 goldshoot0720.subscription 結構
 CREATE TABLE IF NOT EXISTS `subscription` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` text,
   `nextdate` date DEFAULT NULL,
   `price` int DEFAULT NULL,
   `site` text,
   `note` text,
-  `account` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `account` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 取消選取資料匯出。
 

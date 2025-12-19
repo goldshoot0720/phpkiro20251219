@@ -2369,9 +2369,7 @@ function getVideoType($extension) {
                         price: '',
                         site: '',
                         note: '',
-                        account: '',
-                        originalName: '',
-                        originalNextdate: ''
+                        account: ''
                     },
                     editingIndex: -1,
                     foods: [],
@@ -2385,9 +2383,7 @@ function getVideoType($extension) {
                         amount: '',
                         photo: '',
                         price: '',
-                        shop: '',
-                        originalName: '',
-                        originalTodate: ''
+                        shop: ''
                     },
                     editingFoodIndex: -1,
                     dashboardStats: {
@@ -2585,8 +2581,6 @@ function getVideoType($extension) {
                     this.closeAllModals();
                     
                     this.currentSubscription = { ...subscription };
-                    this.currentSubscription.originalName = subscription.name;
-                    this.currentSubscription.originalNextdate = subscription.nextdate;
                     this.editingIndex = index;
                     this.showEditSubscriptionModal = true;
                 },
@@ -2597,8 +2591,7 @@ function getVideoType($extension) {
                         const subscription = this.filteredSubscriptions[index];
                         const formData = new FormData();
                         formData.append('action', 'deleteSubscription');
-                        formData.append('name', subscription.name);
-                        formData.append('nextdate', subscription.nextdate);
+                        formData.append('id', subscription.id);
                         
                         const response = await fetch('subscriptions.php', {
                             method: 'POST',
@@ -2629,8 +2622,7 @@ function getVideoType($extension) {
                         formData.append('account', this.currentSubscription.account);
                         
                         if (this.showEditSubscriptionModal) {
-                            formData.append('originalName', this.currentSubscription.originalName);
-                            formData.append('originalNextdate', this.currentSubscription.originalNextdate);
+                            formData.append('id', this.currentSubscription.id);
                         }
                         
                         const response = await fetch('subscriptions.php', {
@@ -2660,9 +2652,7 @@ function getVideoType($extension) {
                         price: '',
                         site: '',
                         note: '',
-                        account: '',
-                        originalName: '',
-                        originalNextdate: ''
+                        account: ''
                     };
                     this.editingIndex = -1;
                 },
@@ -2680,9 +2670,7 @@ function getVideoType($extension) {
                         price: '',
                         site: '',
                         note: '',
-                        account: '',
-                        originalName: '',
-                        originalNextdate: ''
+                        account: ''
                     };
                     this.currentFood = {
                         name: '',
@@ -2690,9 +2678,7 @@ function getVideoType($extension) {
                         amount: '',
                         photo: '',
                         price: '',
-                        shop: '',
-                        originalName: '',
-                        originalTodate: ''
+                        shop: ''
                     };
                     this.editingIndex = -1;
                     this.editingFoodIndex = -1;
@@ -2824,8 +2810,6 @@ function getVideoType($extension) {
                     
                     console.log('編輯食品 - 原始資料:', food);
                     this.currentFood = { ...food };
-                    this.currentFood.originalName = food.name;
-                    this.currentFood.originalTodate = food.todate;
                     this.editingFoodIndex = index;
                     console.log('編輯食品 - 複製後的資料:', this.currentFood);
                     this.showEditFoodModal = true;
@@ -2837,8 +2821,7 @@ function getVideoType($extension) {
                         const food = this.filteredFoods[index];
                         const formData = new FormData();
                         formData.append('action', 'deleteFood');
-                        formData.append('name', food.name);
-                        formData.append('todate', food.todate);
+                        formData.append('id', food.id);
                         
                         const response = await fetch('foods.php', {
                             method: 'POST',
@@ -2878,8 +2861,7 @@ function getVideoType($extension) {
                         }
                         
                         if (this.showEditFoodModal) {
-                            formData.append('originalName', this.currentFood.originalName);
-                            formData.append('originalTodate', this.currentFood.originalTodate);
+                            formData.append('id', this.currentFood.id);
                         }
                         
                         const response = await fetch('foods.php', {
@@ -2909,9 +2891,7 @@ function getVideoType($extension) {
                         amount: '',
                         photo: '',
                         price: '',
-                        shop: '',
-                        originalName: '',
-                        originalTodate: ''
+                        shop: ''
                     };
                     this.editingFoodIndex = -1;
                 },

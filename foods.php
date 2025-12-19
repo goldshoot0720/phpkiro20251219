@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($action) {
         case 'getFoods':
             try {
-                $stmt = $pdo->query("SELECT name, todate, amount, photo, price, shop, photohash, ROW_NUMBER() OVER (ORDER BY todate ASC) as row_id FROM food ORDER BY todate ASC");
+                $stmt = $pdo->query("SELECT * FROM food ORDER BY todate ASC");
                 $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 // 調試：記錄查詢結果
@@ -78,8 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         case 'updateFood':
             try {
-                $originalName = $_POST['originalName'] ?? '';
-                $originalTodate = $_POST['originalTodate'] ?? '';
                 $name = $_POST['name'] ?? '';
                 $todate = $_POST['todate'] ?? '';
                 $amount = $_POST['amount'] ?? null;
@@ -89,27 +87,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $price = ($price === '' || $price === null) ? 0 : (int)$price;
                 $shop = $_POST['shop'] ?? '';
                 $photohash = ''; // 不再使用，保留空值
+                $id = $_POST['id'] ?? '';
                 
-                $stmt = $pdo->prepare("UPDATE food SET name=?, todate=?, amount=?, photo=?, price=?, shop=?, photohash=? WHERE name=? AND todate=?");
-                $stmt->execute([$name, $todate, $amount, $photo, $price, $shop, $photohash, $originalName, $originalTodate]);
+                if (empty($id)) {
+                    throw new Exception('缺少必要的 ID 參數');
+                }
+                
+                $stmt = $pdo->prepare("UPDATE food SET name=?, todate=?, amount=?, photo=?, price=?, shop=?, photohash=? WHERE id=?");
+                $stmt->execute([$name, $todate, $amount, $photo, $price, $shop, $photohash, $id]);
                 
                 echo json_encode(['success' => true, 'message' => '食品更新成功']);
             } catch(PDOException $e) {
                 echo json_encode(['success' => false, 'message' => '更新食品失敗: ' . $e->getMessage()]);
+            } catch(Exception $e) {
+                echo json_encode(['success' => false, 'message' => $e->getMessage()]);
             }
             break;
             
         case 'deleteFood':
             try {
-                $name = $_POST['name'] ?? '';
-                $todate = $_POST['todate'] ?? '';
+                $id = $_POST['id'] ?? '';
                 
-                $stmt = $pdo->prepare("DELETE FROM food WHERE name=? AND todate=?");
-                $stmt->execute([$name, $todate]);
+                if (empty($id)) {
+                    throw new Exception('缺少必要的 ID 參數');
+                }
+                
+                $stmt = $pdo->prepare("DELETE FROM food WHERE id=?");
+                $stmt->execute([$id]);
                 
                 echo json_encode(['success' => true, 'message' => '食品刪除成功']);
             } catch(PDOException $e) {
                 echo json_encode(['success' => false, 'message' => '刪除食品失敗: ' . $e->getMessage()]);
+            } catch(Exception $e) {
+                echo json_encode(['success' => false, 'message' => $e->getMessage()]);
             }
             break;
             
@@ -809,9 +819,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         amount: '',
                         photo: '',
                         price: '',
-                        shop: '',
-                        originalName: '',
-                        originalTodate: ''
+                        shop: ''
                     },
                     editingIndex: -1
                 }
@@ -956,8 +964,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 },
                 editFood(food, index) {
                     this.currentFood = { ...food };
-                    this.currentFood.originalName = food.name;
-                    this.currentFood.originalTodate = food.todate;
                     this.editingIndex = index;
                     this.showEditModal = true;
                 },
@@ -973,8 +979,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         formData.append('shop', this.currentFood.shop);
                         
                         if (this.showEditModal) {
-                            formData.append('originalName', this.currentFood.originalName);
-                            formData.append('originalTodate', this.currentFood.originalTodate);
+                            formData.append('id', this.currentFood.id);
                         }
                         
                         const response = await fetch('foods.php', {
@@ -1004,9 +1009,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         amount: '',
                         photo: '',
                         price: '',
-                        shop: '',
-                        originalName: '',
-                        originalTodate: ''
+                        shop: ''
                     };
                     this.editingIndex = -1;
                 }
