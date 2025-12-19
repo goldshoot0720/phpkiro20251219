@@ -458,6 +458,141 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+        /* 模態框樣式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .food-form {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 2px rgba(150, 206, 180, 0.5);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .cancel-btn,
+        .save-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .cancel-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .save-btn {
+            background: #96ceb4;
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: #85b8a3;
+            transform: translateY(-1px);
+        }
+
         /* 小手機版本 (最大 480px) */
         @media (max-width: 480px) {
             .container {
@@ -502,6 +637,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             .action-btn {
                 padding: 6px 10px;
                 font-size: 14px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10px;
+                max-height: 95vh;
+            }
+            
+            .modal-header {
+                padding: 20px;
+            }
+            
+            .food-form {
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .cancel-btn, .save-btn {
+                width: 100%;
+                padding: 15px;
+                font-size: 16px;
             }
         }
     </style>
@@ -581,6 +741,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h3>暫無食品記錄</h3>
                 <p>點擊「新增食品」開始管理您的食品庫存</p>
             </div>
+
+            <!-- 新增/編輯食品模態框 -->
+            <div class="modal-overlay" v-if="showAddModal || showEditModal" @click="closeModals">
+                <div class="modal-content" @click.stop>
+                    <div class="modal-header">
+                        <h3>{{ showEditModal ? '編輯食品' : '新增食品' }}</h3>
+                        <button class="close-btn" @click="closeModals">✕</button>
+                    </div>
+                    <form @submit.prevent="saveFood" class="food-form">
+                        <div class="form-group">
+                            <label>食品名稱 *</label>
+                            <input type="text" v-model="currentFood.name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>到期日期 *</label>
+                            <input type="date" v-model="currentFood.todate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>數量</label>
+                            <input type="number" v-model="currentFood.amount" min="0" placeholder="選填">
+                        </div>
+                        <div class="form-group">
+                            <label>價格 (NT$)</label>
+                            <input type="number" v-model="currentFood.price" min="0" placeholder="選填">
+                        </div>
+                        <div class="form-group">
+                            <label>商店</label>
+                            <input type="text" v-model="currentFood.shop" placeholder="購買商店">
+                        </div>
+                        <div class="form-group">
+                            <label>圖片網址</label>
+                            <input type="url" v-model="currentFood.photo" placeholder="https://example.com/image.jpg">
+                            <div v-if="currentFood.photo" style="margin-top: 10px;">
+                                <img 
+                                    :src="currentFood.photo" 
+                                    alt="預覽圖片"
+                                    style="max-width: 100px; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+                                    @error="handleImageError"
+                                >
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" @click="closeModals">取消</button>
+                            <button type="submit" class="save-btn">{{ showEditModal ? '更新' : '新增' }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -593,7 +801,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     foods: [],
                     filteredFoods: [],
                     searchQuery: '',
-                    showAddModal: false
+                    showAddModal: false,
+                    showEditModal: false,
+                    currentFood: {
+                        name: '',
+                        todate: '',
+                        amount: '',
+                        photo: '',
+                        price: '',
+                        shop: '',
+                        originalName: '',
+                        originalTodate: ''
+                    },
+                    editingIndex: -1
                 }
             },
             mounted() {
@@ -733,6 +953,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (this.isExpired(dateString)) return 'expired';
                     if (this.isExpiringSoon(dateString)) return 'expiring-soon';
                     return 'normal';
+                },
+                editFood(food, index) {
+                    this.currentFood = { ...food };
+                    this.currentFood.originalName = food.name;
+                    this.currentFood.originalTodate = food.todate;
+                    this.editingIndex = index;
+                    this.showEditModal = true;
+                },
+                async saveFood() {
+                    try {
+                        const formData = new FormData();
+                        formData.append('action', this.showEditModal ? 'updateFood' : 'addFood');
+                        formData.append('name', this.currentFood.name);
+                        formData.append('todate', this.currentFood.todate);
+                        formData.append('amount', this.currentFood.amount);
+                        formData.append('photo', this.currentFood.photo);
+                        formData.append('price', this.currentFood.price);
+                        formData.append('shop', this.currentFood.shop);
+                        
+                        if (this.showEditModal) {
+                            formData.append('originalName', this.currentFood.originalName);
+                            formData.append('originalTodate', this.currentFood.originalTodate);
+                        }
+                        
+                        const response = await fetch('foods.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            await this.loadFoods();
+                            this.closeModals();
+                            alert(this.showEditModal ? '食品更新成功！' : '食品新增成功！');
+                        } else {
+                            alert('操作失敗: ' + data.message);
+                        }
+                    } catch (error) {
+                        console.error('保存食品失敗:', error);
+                        alert('操作失敗，請稍後再試');
+                    }
+                },
+                closeModals() {
+                    this.showAddModal = false;
+                    this.showEditModal = false;
+                    this.currentFood = {
+                        name: '',
+                        todate: '',
+                        amount: '',
+                        photo: '',
+                        price: '',
+                        shop: '',
+                        originalName: '',
+                        originalTodate: ''
+                    };
+                    this.editingIndex = -1;
                 }
             }
         }).mount('#app');
