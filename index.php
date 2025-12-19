@@ -831,6 +831,12 @@ function getVideoType($extension) {
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
             z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .mobile-menu.show {
             opacity: 1;
             visibility: visible;
         }
@@ -1204,7 +1210,7 @@ function getVideoType($extension) {
             </nav>
 
             <!-- 手機版選單 -->
-            <div class="mobile-menu" v-if="showMobileMenu" @click="showMobileMenu = false">
+            <div class="mobile-menu" :class="{ show: showMobileMenu }" v-show="showMobileMenu" @click="showMobileMenu = false">
                 <div class="mobile-menu-content" @click.stop>
                     <div class="mobile-menu-header">
                         <div style="display: flex; align-items: center;">
