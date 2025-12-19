@@ -1863,7 +1863,7 @@ function getVideoType($extension) {
                     <!-- 即將到期的訂閱 -->
                     <div v-if="expiringSubscriptions.length > 0" style="margin-bottom: 40px;">
                         <h2 style="font-size: 24px; margin-bottom: 25px; color: #ff6b6b; display: flex; align-items: center;">
-                            ⚠️ 即將到期的訂閱 ({{ expiringSubscriptions.length }})
+                            ⚠️ 即將到期的訂閱 - 7天內 ({{ expiringSubscriptions.length }})
                         </h2>
                         <div class="expiring-list">
                             <div 
@@ -1897,7 +1897,7 @@ function getVideoType($extension) {
                     <!-- 即將到期的食品 -->
                     <div v-if="expiringFoods.length > 0" style="margin-bottom: 40px;">
                         <h2 style="font-size: 24px; margin-bottom: 25px; color: #ffa726; display: flex; align-items: center;">
-                            🍽️ 即將到期的食品 ({{ expiringFoods.length }})
+                            🍽️ 即將到期的食品 - 30天內 ({{ expiringFoods.length }})
                         </h2>
                         <div class="expiring-list">
                             <div 
@@ -1933,7 +1933,7 @@ function getVideoType($extension) {
                         <div style="font-size: 48px; margin-bottom: 20px;">✅</div>
                         <h3 style="color: #4ecdc4; margin-bottom: 10px;">太棒了！</h3>
                         <p style="opacity: 0.8;">目前沒有即將到期的訂閱或食品</p>
-                        <p style="opacity: 0.6; font-size: 14px; margin-top: 10px;">系統會自動監控7天內到期的項目</p>
+                        <p style="opacity: 0.6; font-size: 14px; margin-top: 10px;">系統會自動監控訂閱7天內、食品30天內到期的項目</p>
                     </div>
 
                     <!-- 到期狀況總結 -->
@@ -2160,7 +2160,7 @@ function getVideoType($extension) {
                 </div>
 
                 <!-- 新增/編輯訂閱模態框 -->
-                <div class="modal-overlay" v-if="showAddSubscriptionModal || showEditSubscriptionModal" @click="closeModals">
+                <div class="modal-overlay" v-if="(showAddSubscriptionModal || showEditSubscriptionModal) && currentPage === 'subscriptions' && currentPage !== 'home'" @click="closeModals">
                     <div class="modal-content" @click.stop>
                         <div class="modal-header">
                             <h3>{{ showEditSubscriptionModal ? '編輯訂閱' : '新增訂閱' }}</h3>
@@ -2278,7 +2278,7 @@ function getVideoType($extension) {
                 </div>
 
                 <!-- 新增/編輯食品模態框 -->
-                <div class="modal-overlay" v-if="showAddFoodModal || showEditFoodModal" @click="closeFoodModals">
+                <div class="modal-overlay" v-if="(showAddFoodModal || showEditFoodModal) && currentPage === 'foods' && currentPage !== 'home'" @click="closeFoodModals">
                     <div class="modal-content" @click.stop>
                         <div class="modal-header">
                             <h3>{{ showEditFoodModal ? '編輯食品' : '新增食品' }}</h3>
@@ -2577,6 +2577,9 @@ function getVideoType($extension) {
                     }
                 },
                 editSubscription(subscription, index) {
+                    // 只在訂閱管理頁面才開啟編輯模態框
+                    if (this.currentPage !== 'subscriptions') return;
+                    
                     // 先關閉所有其他模態框
                     this.closeAllModals();
                     
@@ -2799,6 +2802,9 @@ function getVideoType($extension) {
                     }
                 },
                 editFood(food, index) {
+                    // 只在食品管理頁面才開啟編輯模態框
+                    if (this.currentPage !== 'foods') return;
+                    
                     // 先關閉所有其他模態框
                     this.closeAllModals();
                     
@@ -2967,9 +2973,11 @@ function getVideoType($extension) {
                 updateExpiringItems() {
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
+                    const threeDaysLater = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
                     const sevenDaysLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+                    const thirtyDaysLater = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
                     
-                    // 獲取即將到期的訂閱 (7天內，包含已過期的)
+                    // 獲取即將到期的訂閱 (3天和7天內，包含已過期的)
                     this.expiringSubscriptions = this.subscriptions.filter(subscription => {
                         if (!subscription.nextdate || subscription.nextdate === '0000-00-00') return false;
                         
@@ -2990,7 +2998,7 @@ function getVideoType($extension) {
                         return dateA - dateB;
                     });
                     
-                    // 獲取即將到期的食品 (7天內，包含已過期的)
+                    // 獲取即將到期的食品 (7天和30天內，包含已過期的)
                     this.expiringFoods = this.foods.filter(food => {
                         if (!food.todate || food.todate === '0000-00-00') return false;
                         
@@ -3003,8 +3011,8 @@ function getVideoType($extension) {
                         
                         if (isNaN(date.getTime()) || date.getFullYear() === 1970) return false;
                         
-                        // 包含已過期和7天內到期的項目
-                        return date <= sevenDaysLater;
+                        // 包含已過期和30天內到期的項目
+                        return date <= thirtyDaysLater;
                     }).sort((a, b) => {
                         const dateA = new Date(a.todate + 'T00:00:00');
                         const dateB = new Date(b.todate + 'T00:00:00');
@@ -3137,24 +3145,40 @@ function getVideoType($extension) {
                     }, 150);
                 },
                 openAddSubscriptionModal() {
+                    // 只在訂閱管理頁面才開啟模態框
+                    if (this.currentPage !== 'subscriptions') return;
                     this.closeAllModals();
                     this.showAddSubscriptionModal = true;
                 },
                 openAddFoodModal() {
+                    // 只在食品管理頁面才開啟模態框
+                    if (this.currentPage !== 'foods') return;
                     this.closeAllModals();
                     this.showAddFoodModal = true;
                 },
                 navigateAndOpenSubscriptionModal() {
+                    // 先關閉所有模態框
+                    this.closeAllModals();
+                    // 切換到訂閱頁面
                     this.currentPage = 'subscriptions';
+                    // 等待頁面切換完成後再開啟模態框
                     setTimeout(() => {
-                        this.openAddSubscriptionModal();
-                    }, 100);
+                        if (this.currentPage === 'subscriptions' && this.currentPage !== 'home') {
+                            this.showAddSubscriptionModal = true;
+                        }
+                    }, 150);
                 },
                 navigateAndOpenFoodModal() {
+                    // 先關閉所有模態框
+                    this.closeAllModals();
+                    // 切換到食品頁面
                     this.currentPage = 'foods';
+                    // 等待頁面切換完成後再開啟模態框
                     setTimeout(() => {
-                        this.openAddFoodModal();
-                    }, 100);
+                        if (this.currentPage === 'foods' && this.currentPage !== 'home') {
+                            this.showAddFoodModal = true;
+                        }
+                    }, 150);
                 }
             },
             watch: {
