@@ -251,12 +251,11 @@ function getVideoType($extension) {
             padding: 30px;
             text-align: left;
             transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
         }
 
         .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
         .feature-icon {
@@ -877,25 +876,25 @@ function getVideoType($extension) {
 
                 <!-- 功能卡片 -->
                 <div class="features-grid">
-                    <div class="feature-card" @click="currentPage = 'dashboard'">
+                    <div class="feature-card">
                         <div class="feature-icon" style="background: #ff6b6b;">🔥</div>
                         <div class="feature-title">前端 - Vue SPA</div>
                         <div class="feature-desc">使用Vue.js單頁應用架構，提供流暢的用戶體驗</div>
                     </div>
 
-                    <div class="feature-card" @click="currentPage = 'gallery'">
+                    <div class="feature-card">
                         <div class="feature-icon" style="background: #4ecdc4;">💧</div>
                         <div class="feature-title">後端 - PHP＋MySQL</div>
                         <div class="feature-desc">穩定可靠的PHP後端搭配MySQL資料庫</div>
                     </div>
 
-                    <div class="feature-card" @click="currentPage = 'subscriptions'">
+                    <div class="feature-card">
                         <div class="feature-icon" style="background: #45b7d1;">🌐</div>
                         <div class="feature-title">網頁存放於 - InfinityFree</div>
                         <div class="feature-desc">免費穩定的網頁託管服務，全球訪問</div>
                     </div>
 
-                    <div class="feature-card" @click="currentPage = 'foods'">
+                    <div class="feature-card">
                         <div class="feature-icon" style="background: #96ceb4;">🎬</div>
                         <div class="feature-title">影片存放於 - InfinityFree</div>
                         <div class="feature-desc">高效的影片儲存和串流播放服務</div>
@@ -1175,8 +1174,16 @@ function getVideoType($extension) {
                                 <span class="detail-value">{{ food.shop }}</span>
                             </div>
                             <div class="detail-item" v-if="food.photo">
-                                <span class="detail-label">照片:</span>
-                                <span class="detail-value">{{ food.photo }}</span>
+                                <span class="detail-label">圖片:</span>
+                                <div style="margin-top: 10px;">
+                                    <img 
+                                        :src="food.photo" 
+                                        :alt="food.name"
+                                        style="max-width: 120px; height: auto; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer;"
+                                        @error="handleImageError"
+                                        @click="viewImage(food.photo)"
+                                    >
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1218,12 +1225,16 @@ function getVideoType($extension) {
                                 <input type="text" v-model="currentFood.shop" placeholder="購買商店">
                             </div>
                             <div class="form-group">
-                                <label>照片檔名</label>
-                                <input type="text" v-model="currentFood.photo" placeholder="例: food.jpg">
-                            </div>
-                            <div class="form-group">
-                                <label>照片雜湊值</label>
-                                <input type="text" v-model="currentFood.photohash" placeholder="照片雜湊值">
+                                <label>圖片網址</label>
+                                <input type="url" v-model="currentFood.photo" placeholder="https://example.com/image.jpg">
+                                <div v-if="currentFood.photo" style="margin-top: 10px;">
+                                    <img 
+                                        :src="currentFood.photo" 
+                                        alt="預覽圖片"
+                                        style="max-width: 100px; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+                                        @error="handleImageError"
+                                    >
+                                </div>
                             </div>
                             <div class="form-actions">
                                 <button type="button" class="cancel-btn" @click="closeFoodModals">取消</button>
@@ -1294,7 +1305,6 @@ function getVideoType($extension) {
                         photo: '',
                         price: '',
                         shop: '',
-                        photohash: '',
                         originalName: '',
                         originalTodate: ''
                     },
@@ -1353,9 +1363,15 @@ function getVideoType($extension) {
                     this.loadImages();
                     this.searchQuery = '';
                 },
-                viewImage(image) {
+                viewImage(imageSrc) {
                     // 在新視窗中開啟圖片
-                    window.open('images/' + image.name, '_blank');
+                    if (typeof imageSrc === 'string') {
+                        // 如果是字串，直接開啟
+                        window.open(imageSrc, '_blank');
+                    } else if (imageSrc && imageSrc.name) {
+                        // 如果是圖片物件，使用 images/ 路徑
+                        window.open('images/' + imageSrc.name, '_blank');
+                    }
                 },
                 handleImageError(event) {
                     // 圖片載入失敗時顯示預設圖示
@@ -1518,20 +1534,67 @@ function getVideoType($extension) {
                     this.editingIndex = -1;
                 },
                 formatDate(dateString) {
-                    if (!dateString) return '未設定';
-                    const date = new Date(dateString);
-                    return date.toLocaleDateString('zh-TW');
+                    if (!dateString || dateString === '0000-00-00') return '未設定';
+                    
+                    try {
+                        // 簡化日期處理
+                        let date;
+                        
+                        if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                            // YYYY-MM-DD 格式，直接分割避免時區問題
+                            const parts = dateString.split('-');
+                            date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                        } else {
+                            date = new Date(dateString);
+                        }
+                        
+                        // 檢查日期是否有效
+                        if (isNaN(date.getTime())) {
+                            console.warn('Invalid date:', dateString);
+                            return '日期格式錯誤';
+                        }
+                        
+                        // 檢查年份是否合理
+                        const year = date.getFullYear();
+                        if (year < 1900 || year > 2100) {
+                            console.warn('Suspicious year:', year, 'from:', dateString);
+                            return '日期錯誤';
+                        }
+                        
+                        return date.toLocaleDateString('zh-TW');
+                    } catch (error) {
+                        console.error('Date formatting error:', error, 'for:', dateString);
+                        return '日期錯誤';
+                    }
                 },
                 isExpired(dateString) {
-                    if (!dateString) return false;
-                    const date = new Date(dateString);
+                    if (!dateString || dateString === '0000-00-00') return false;
+                    
+                    let date;
+                    if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        date = new Date(dateString + 'T00:00:00');
+                    } else {
+                        date = new Date(dateString);
+                    }
+                    
+                    if (isNaN(date.getTime()) || date.getFullYear() === 1970) return false;
+                    
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
                     return date < today;
                 },
                 isExpiringSoon(dateString) {
-                    if (!dateString) return false;
-                    const date = new Date(dateString);
+                    if (!dateString || dateString === '0000-00-00') return false;
+                    
+                    let date;
+                    if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        date = new Date(dateString + 'T00:00:00');
+                    } else {
+                        date = new Date(dateString);
+                    }
+                    
+                    if (isNaN(date.getTime()) || date.getFullYear() === 1970) return false;
+                    
                     const today = new Date();
                     const sevenDaysLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
                     today.setHours(0, 0, 0, 0);
@@ -1557,6 +1620,18 @@ function getVideoType($extension) {
                         if (data.success) {
                             this.foods = data.data || [];
                             this.filteredFoods = [...this.foods];
+                            
+                            // 調試：檢查載入的資料
+                            console.log('載入的食品資料:', this.foods);
+                            this.foods.forEach((food, index) => {
+                                console.log(`食品 ${index}:`, {
+                                    name: food.name,
+                                    todate: food.todate,
+                                    todateType: typeof food.todate,
+                                    amount: food.amount,
+                                    price: food.price
+                                });
+                            });
                         } else {
                             console.error('載入食品失敗:', data.message);
                             this.foods = [];
@@ -1579,10 +1654,12 @@ function getVideoType($extension) {
                     }
                 },
                 editFood(food, index) {
+                    console.log('編輯食品 - 原始資料:', food);
                     this.currentFood = { ...food };
                     this.currentFood.originalName = food.name;
                     this.currentFood.originalTodate = food.todate;
                     this.editingFoodIndex = index;
+                    console.log('編輯食品 - 複製後的資料:', this.currentFood);
                     this.showEditFoodModal = true;
                 },
                 async deleteFood(index) {
@@ -1614,6 +1691,10 @@ function getVideoType($extension) {
                 },
                 async saveFood() {
                     try {
+                        // 調試：檢查要傳送的資料
+                        console.log('SaveFood - 當前食品資料:', this.currentFood);
+                        console.log('SaveFood - 日期值:', this.currentFood.todate, '類型:', typeof this.currentFood.todate);
+                        
                         const formData = new FormData();
                         formData.append('action', this.showEditFoodModal ? 'updateFood' : 'addFood');
                         formData.append('name', this.currentFood.name);
@@ -1622,7 +1703,11 @@ function getVideoType($extension) {
                         formData.append('photo', this.currentFood.photo);
                         formData.append('price', this.currentFood.price);
                         formData.append('shop', this.currentFood.shop);
-                        formData.append('photohash', this.currentFood.photohash);
+                        
+                        // 調試：檢查 FormData 內容
+                        for (let [key, value] of formData.entries()) {
+                            console.log('FormData:', key, '=', value);
+                        }
                         
                         if (this.showEditFoodModal) {
                             formData.append('originalName', this.currentFood.originalName);
@@ -1657,7 +1742,6 @@ function getVideoType($extension) {
                         photo: '',
                         price: '',
                         shop: '',
-                        photohash: '',
                         originalName: '',
                         originalTodate: ''
                     };

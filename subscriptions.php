@@ -1,15 +1,10 @@
 <?php
-// 資料庫連接設定
-$host = '127.0.0.1';
-$port = '3306';
-$dbname = 'goldshoot0720';
-$username = 'root';
-$password = '';
+// 引入動態資料庫配置
+require_once 'config.php';
 
 try {
-    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
+    $pdo = getDatabase();
+} catch(Exception $e) {
     die("資料庫連接失敗: " . $e->getMessage());
 }
 
