@@ -198,6 +198,11 @@ function getVideoType($extension) {
             background-color: rgba(255, 255, 255, 0.1);
         }
 
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-bottom: 2px solid #ff6b6b;
+        }
+
         .nav-icon {
             margin-right: 8px;
             font-size: 16px;
@@ -770,6 +775,192 @@ function getVideoType($extension) {
             gap: 15px;
         }
 
+        /* 電腦版主選單樣式 */
+        .main-menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .main-menu-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: left;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .main-menu-card:hover::before {
+            left: 100%;
+        }
+
+        .main-menu-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .main-menu-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-menu-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #FFD700;
+        }
+
+        .main-menu-desc {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .main-menu-arrow {
+            position: absolute;
+            bottom: 25px;
+            right: 30px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6b6b;
+            transition: transform 0.3s ease;
+        }
+
+        .main-menu-card:hover .main-menu-arrow {
+            transform: translateX(5px);
+        }
+
+        /* 到期提醒列表樣式 */
+        .expiring-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .expiring-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+
+        .expiring-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .subscription-item {
+            border-left-color: #45b7d1;
+        }
+
+        .subscription-item:hover {
+            border-left-color: #3498db;
+        }
+
+        .food-item {
+            border-left-color: #96ceb4;
+        }
+
+        .food-item:hover {
+            border-left-color: #85b8a3;
+        }
+
+        .expiring-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .expiring-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .expiring-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .expiring-date {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .expiring-date.expired {
+            color: #ff6b6b;
+        }
+
+        .expiring-date.expiring-soon {
+            color: #ffa726;
+        }
+
+        .expiring-date.normal {
+            color: #4ecdc4;
+        }
+
+        .expiring-price, .expiring-shop {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .expiring-price {
+            color: #4ecdc4;
+            font-weight: 500;
+        }
+
+        .expiring-days {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
         /* 響應式設計 */
         /* 儀表板特殊樣式 */
         .dashboard-button {
@@ -934,6 +1125,30 @@ function getVideoType($extension) {
                 font-size: 15px;
             }
             
+            /* 主選單平板優化 */
+            .main-menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            
+            .main-menu-card {
+                padding: 25px;
+            }
+            
+            .main-menu-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+            }
+            
+            .main-menu-title {
+                font-size: 22px;
+            }
+            
+            .main-menu-desc {
+                font-size: 15px;
+            }
+            
             /* 儀表板平板優化 */
             .dashboard-button {
                 padding: 12px 25px !important;
@@ -998,6 +1213,45 @@ function getVideoType($extension) {
             
             .feature-title {
                 font-size: 18px;
+            }
+
+            /* 主選單手機版優化 */
+            .main-menu-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                margin: 0 10px;
+            }
+            
+            .main-menu-card {
+                padding: 25px 20px;
+                border-radius: 16px;
+            }
+            
+            .main-menu-card:hover {
+                transform: translateY(-4px) scale(1.01);
+            }
+            
+            .main-menu-icon {
+                width: 55px;
+                height: 55px;
+                font-size: 26px;
+                margin-bottom: 15px;
+            }
+            
+            .main-menu-title {
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+            
+            .main-menu-desc {
+                font-size: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .main-menu-arrow {
+                bottom: 20px;
+                right: 25px;
+                font-size: 20px;
             }
 
             .gallery-controls {
@@ -1097,6 +1351,35 @@ function getVideoType($extension) {
                 padding: 15px !important;
                 font-size: 16px !important;
             }
+
+            /* 到期列表手機版優化 */
+            .expiring-item {
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .expiring-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            
+            .expiring-name {
+                font-size: 16px;
+            }
+            
+            .expiring-date {
+                font-size: 13px;
+            }
+            
+            .expiring-price, .expiring-shop {
+                font-size: 12px;
+            }
+            
+            .expiring-days {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
         }
 
         /* 小手機版本 (最大 480px) */
@@ -1129,6 +1412,53 @@ function getVideoType($extension) {
             
             .feature-desc {
                 font-size: 14px;
+            }
+
+            /* 主選單小手機版優化 */
+            .main-menu-card {
+                padding: 20px 15px;
+            }
+            
+            .main-menu-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            
+            .main-menu-title {
+                font-size: 18px;
+            }
+            
+            .main-menu-desc {
+                font-size: 14px;
+            }
+
+            /* 到期列表小手機版優化 */
+            .expiring-item {
+                padding: 12px;
+                gap: 12px;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .expiring-content {
+                text-align: center;
+            }
+            
+            .expiring-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+                align-self: center;
+            }
+            
+            .expiring-name {
+                font-size: 15px;
+            }
+            
+            .expiring-days {
+                align-self: center;
+            }x;
             }
             
             .gallery-grid {
@@ -1176,28 +1506,32 @@ function getVideoType($extension) {
         <div class="container">
             <!-- 頂部導航 -->
             <nav class="navbar">
-                <div class="logo">
+                <div class="logo" @click="currentPage = 'home'" style="cursor: pointer;">
                     <div class="logo-icon">🤖</div>
                     鋒兄AI資訊系統
                 </div>
                 <div class="nav-menu">
-                    <div class="nav-item" @click="currentPage = 'dashboard'">
+                    <div class="nav-item" :class="{ active: currentPage === 'home' }" @click="currentPage = 'home'">
+                        <span class="nav-icon">🏠</span>
+                        首頁
+                    </div>
+                    <div class="nav-item" :class="{ active: currentPage === 'dashboard' }" @click="currentPage = 'dashboard'">
                         <span class="nav-icon">📊</span>
                         儀表板
                     </div>
-                    <div class="nav-item" @click="currentPage = 'gallery'">
+                    <div class="nav-item" :class="{ active: currentPage === 'gallery' }" @click="currentPage = 'gallery'">
                         <span class="nav-icon">🖼️</span>
                         圖片庫
                     </div>
-                    <div class="nav-item" @click="currentPage = 'videos'">
+                    <div class="nav-item" :class="{ active: currentPage === 'videos' }" @click="currentPage = 'videos'">
                         <span class="nav-icon">🎬</span>
                         影片庫
                     </div>
-                    <div class="nav-item" @click="currentPage = 'subscriptions'">
+                    <div class="nav-item" :class="{ active: currentPage === 'subscriptions' }" @click="currentPage = 'subscriptions'">
                         <span class="nav-icon">📋</span>
                         訂閱管理
                     </div>
-                    <div class="nav-item" @click="currentPage = 'foods'">
+                    <div class="nav-item" :class="{ active: currentPage === 'foods' }" @click="currentPage = 'foods'">
                         <span class="nav-icon">🍽️</span>
                         食品管理
                     </div>
@@ -1253,9 +1587,57 @@ function getVideoType($extension) {
                     <div class="main-logo">🤖</div>
                     鋒兄AI資訊系統
                 </h1>
-                <p class="subtitle">年小管理您的影片和圖片收藏，支援智能分類和快速搜尋</p>
+                <p class="subtitle">智能管理您的影片和圖片收藏，支援智能分類和快速搜尋</p>
 
-                <!-- 功能卡片 -->
+                <!-- 電腦版主選單 -->
+                <div class="desktop-main-menu" style="margin: 60px 0;">
+                    <h2 style="text-align: center; font-size: 28px; margin-bottom: 40px; color: #FFD700;">🌟 系統功能選單</h2>
+                    <div class="main-menu-grid">
+                        <div class="main-menu-card" @click="currentPage = 'dashboard'">
+                            <div class="main-menu-icon" style="background: linear-gradient(135deg, #ff6b6b, #ff8e8e);">📊</div>
+                            <div class="main-menu-title">系統儀表板</div>
+                            <div class="main-menu-desc">即時監控訂閱和食品到期狀態，查看系統統計數據</div>
+                            <div class="main-menu-arrow">→</div>
+                        </div>
+
+                        <div class="main-menu-card" @click="currentPage = 'gallery'">
+                            <div class="main-menu-icon" style="background: linear-gradient(135deg, #4ecdc4, #44a08d);">🖼️</div>
+                            <div class="main-menu-title">圖片庫管理</div>
+                            <div class="main-menu-desc">瀏覽和管理您的圖片收藏，支援快速搜尋和預覽</div>
+                            <div class="main-menu-arrow">→</div>
+                        </div>
+
+                        <div class="main-menu-card" @click="currentPage = 'videos'">
+                            <div class="main-menu-icon" style="background: linear-gradient(135deg, #96ceb4, #85b8a3);">🎬</div>
+                            <div class="main-menu-title">影片庫管理</div>
+                            <div class="main-menu-desc">管理和播放您的影片收藏，支援多種格式</div>
+                            <div class="main-menu-arrow">→</div>
+                        </div>
+
+                        <div class="main-menu-card" @click="currentPage = 'subscriptions'">
+                            <div class="main-menu-icon" style="background: linear-gradient(135deg, #45b7d1, #3498db);">📋</div>
+                            <div class="main-menu-title">訂閱管理</div>
+                            <div class="main-menu-desc">管理各種訂閱服務，追蹤付款日期和會員資訊</div>
+                            <div class="main-menu-arrow">→</div>
+                        </div>
+
+                        <div class="main-menu-card" @click="currentPage = 'foods'">
+                            <div class="main-menu-icon" style="background: linear-gradient(135deg, #ffa726, #ff9800);">🍽️</div>
+                            <div class="main-menu-title">食品管理</div>
+                            <div class="main-menu-desc">管理食品庫存和到期日期，避免食物浪費</div>
+                            <div class="main-menu-arrow">→</div>
+                        </div>
+
+                        <div class="main-menu-card" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1)); cursor: default;">
+                            <div class="main-menu-icon" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">🚀</div>
+                            <div class="main-menu-title">更多功能</div>
+                            <div class="main-menu-desc">更多強大功能正在開發中，敬請期待...</div>
+                            <div class="main-menu-arrow" style="opacity: 0.5;">⏳</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 技術特色介紹 -->
                 <div class="features-grid">
                     <div class="feature-card">
                         <div class="feature-icon" style="background: #ff6b6b;">🔥</div>
@@ -1387,6 +1769,74 @@ function getVideoType($extension) {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- 到期提醒詳細列表 -->
+                <div style="margin-top: 60px;">
+                    <!-- 即將到期的訂閱 -->
+                    <div v-if="expiringSubscriptions.length > 0" style="margin-bottom: 40px;">
+                        <h2 style="font-size: 24px; margin-bottom: 25px; color: #ff6b6b; display: flex; align-items: center;">
+                            ⚠️ 即將到期的訂閱 ({{ expiringSubscriptions.length }})
+                        </h2>
+                        <div class="expiring-list">
+                            <div 
+                                v-for="subscription in expiringSubscriptions" 
+                                :key="subscription.name + subscription.nextdate"
+                                class="expiring-item subscription-item"
+                                @click="currentPage = 'subscriptions'"
+                            >
+                                <div class="expiring-icon" style="background: #45b7d1;">📋</div>
+                                <div class="expiring-content">
+                                    <div class="expiring-name">{{ subscription.name }}</div>
+                                    <div class="expiring-date" :class="getDateClass(subscription.nextdate)">
+                                        到期日: {{ formatDate(subscription.nextdate) }}
+                                    </div>
+                                    <div class="expiring-price" v-if="subscription.price && subscription.price > 0">
+                                        NT$ {{ subscription.price }}
+                                    </div>
+                                </div>
+                                <div class="expiring-days">
+                                    {{ getDaysUntilExpiry(subscription.nextdate) }}天後
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 即將到期的食品 -->
+                    <div v-if="expiringFoods.length > 0" style="margin-bottom: 40px;">
+                        <h2 style="font-size: 24px; margin-bottom: 25px; color: #ffa726; display: flex; align-items: center;">
+                            🍽️ 即將到期的食品 ({{ expiringFoods.length }})
+                        </h2>
+                        <div class="expiring-list">
+                            <div 
+                                v-for="food in expiringFoods" 
+                                :key="food.name + food.todate"
+                                class="expiring-item food-item"
+                                @click="currentPage = 'foods'"
+                            >
+                                <div class="expiring-icon" style="background: #96ceb4;">🍽️</div>
+                                <div class="expiring-content">
+                                    <div class="expiring-name">{{ food.name }}</div>
+                                    <div class="expiring-date" :class="getDateClass(food.todate)">
+                                        到期日: {{ formatDate(food.todate) }}
+                                    </div>
+                                    <div class="expiring-shop" v-if="food.shop">
+                                        購於: {{ food.shop }}
+                                    </div>
+                                </div>
+                                <div class="expiring-days">
+                                    {{ getDaysUntilExpiry(food.todate) }}天後
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 如果沒有到期項目 -->
+                    <div v-if="expiringSubscriptions.length === 0 && expiringFoods.length === 0" style="text-align: center; padding: 40px; background: rgba(255, 255, 255, 0.05); border-radius: 16px; margin-bottom: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">✅</div>
+                        <h3 style="color: #4ecdc4; margin-bottom: 10px;">太棒了！</h3>
+                        <p style="opacity: 0.8;">目前沒有即將到期的訂閱或食品</p>
                     </div>
                 </div>
 
@@ -1831,7 +2281,9 @@ function getVideoType($extension) {
                             thirtyDays: 0
                         }
                     },
-                    showMobileMenu: false
+                    showMobileMenu: false,
+                    expiringSubscriptions: [],
+                    expiringFoods: []
                 }
             },
             mounted() {
@@ -2347,6 +2799,77 @@ function getVideoType($extension) {
                     };
                     
                     console.log('儀表板統計更新:', this.dashboardStats);
+                    
+                    // 更新到期項目列表
+                    this.updateExpiringItems();
+                },
+                updateExpiringItems() {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const sevenDaysLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+                    
+                    // 獲取即將到期的訂閱 (7天內)
+                    this.expiringSubscriptions = this.subscriptions.filter(subscription => {
+                        if (!subscription.nextdate || subscription.nextdate === '0000-00-00') return false;
+                        
+                        let date;
+                        if (typeof subscription.nextdate === 'string' && subscription.nextdate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                            date = new Date(subscription.nextdate + 'T00:00:00');
+                        } else {
+                            date = new Date(subscription.nextdate);
+                        }
+                        
+                        if (isNaN(date.getTime()) || date.getFullYear() === 1970) return false;
+                        
+                        return date >= today && date <= sevenDaysLater;
+                    }).sort((a, b) => {
+                        const dateA = new Date(a.nextdate + 'T00:00:00');
+                        const dateB = new Date(b.nextdate + 'T00:00:00');
+                        return dateA - dateB;
+                    });
+                    
+                    // 獲取即將到期的食品 (7天內)
+                    this.expiringFoods = this.foods.filter(food => {
+                        if (!food.todate || food.todate === '0000-00-00') return false;
+                        
+                        let date;
+                        if (typeof food.todate === 'string' && food.todate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                            date = new Date(food.todate + 'T00:00:00');
+                        } else {
+                            date = new Date(food.todate);
+                        }
+                        
+                        if (isNaN(date.getTime()) || date.getFullYear() === 1970) return false;
+                        
+                        return date >= today && date <= sevenDaysLater;
+                    }).sort((a, b) => {
+                        const dateA = new Date(a.todate + 'T00:00:00');
+                        const dateB = new Date(b.todate + 'T00:00:00');
+                        return dateA - dateB;
+                    });
+                    
+                    console.log('即將到期的訂閱:', this.expiringSubscriptions);
+                    console.log('即將到期的食品:', this.expiringFoods);
+                },
+                getDaysUntilExpiry(dateString) {
+                    if (!dateString || dateString === '0000-00-00') return 0;
+                    
+                    let date;
+                    if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        date = new Date(dateString + 'T00:00:00');
+                    } else {
+                        date = new Date(dateString);
+                    }
+                    
+                    if (isNaN(date.getTime()) || date.getFullYear() === 1970) return 0;
+                    
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    const diffTime = date - today;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    return Math.max(0, diffDays);
                 }
             },
             watch: {
