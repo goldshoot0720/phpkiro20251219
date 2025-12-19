@@ -608,7 +608,14 @@ function getVideoType($extension) {
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        /* 確保模態框不會重疊 */
+        .modal-overlay:not(:last-of-type) {
+            display: none !important;
         }
 
         .modal-content {
@@ -1956,10 +1963,10 @@ function getVideoType($extension) {
                 <div style="margin-top: 60px; text-align: center;">
                     <h2 style="font-size: 24px; margin-bottom: 30px;">快速操作</h2>
                     <div class="quick-actions-mobile" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                        <button @click="currentPage = 'subscriptions'; showAddSubscriptionModal = true" class="dashboard-button" style="padding: 15px 30px; background: #45b7d1; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px;">
+                        <button @click="navigateAndOpenSubscriptionModal" class="dashboard-button" style="padding: 15px 30px; background: #45b7d1; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px;">
                             ➕ 新增訂閱
                         </button>
-                        <button @click="currentPage = 'foods'; showAddFoodModal = true" class="dashboard-button" style="padding: 15px 30px; background: #96ceb4; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px;">
+                        <button @click="navigateAndOpenFoodModal" class="dashboard-button" style="padding: 15px 30px; background: #96ceb4; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px;">
                             ➕ 新增食品
                         </button>
                         <button @click="currentPage = 'gallery'" class="dashboard-button" style="padding: 15px 30px; background: #4ecdc4; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px;">
@@ -2096,7 +2103,7 @@ function getVideoType($extension) {
                         v-model="subscriptionSearchQuery"
                         @input="filterSubscriptions"
                     >
-                    <button class="upload-btn" @click="showAddSubscriptionModal = true">
+                    <button class="upload-btn" @click="openAddSubscriptionModal">
                         ➕ 新增訂閱
                     </button>
                 </div>
@@ -2210,7 +2217,7 @@ function getVideoType($extension) {
                         v-model="foodSearchQuery"
                         @input="filterFoods"
                     >
-                    <button class="upload-btn" @click="showAddFoodModal = true">
+                    <button class="upload-btn" @click="openAddFoodModal">
                         ➕ 新增食品
                     </button>
                 </div>
@@ -2402,10 +2409,18 @@ function getVideoType($extension) {
             created() {
                 // 確保初始狀態正確
                 this.showMobileMenu = false;
+                // 確保所有模態框都關閉
+                this.showAddSubscriptionModal = false;
+                this.showEditSubscriptionModal = false;
+                this.showAddFoodModal = false;
+                this.showEditFoodModal = false;
             },
             mounted() {
                 // 確保手機選單初始狀態正確
                 this.showMobileMenu = false;
+                
+                // 確保所有模態框都關閉
+                this.closeAllModals();
                 
                 this.loadImages();
                 this.loadVideos();
@@ -2418,7 +2433,6 @@ function getVideoType($extension) {
                 }, 1000);
                 
                 // 添加點擊外部關閉選單的事件監聽器
-                document.addEventListener('click', this.handleDocumentClick);
                 document.addEventListener('click', this.handleDocumentClick);
                 
                 // 添加 ESC 鍵關閉選單的事件監聽器
@@ -2567,6 +2581,9 @@ function getVideoType($extension) {
                     }
                 },
                 editSubscription(subscription, index) {
+                    // 先關閉所有其他模態框
+                    this.closeAllModals();
+                    
                     this.currentSubscription = { ...subscription };
                     this.currentSubscription.originalName = subscription.name;
                     this.currentSubscription.originalNextdate = subscription.nextdate;
@@ -2648,6 +2665,37 @@ function getVideoType($extension) {
                         originalNextdate: ''
                     };
                     this.editingIndex = -1;
+                },
+                closeAllModals() {
+                    // 關閉所有模態框
+                    this.showAddSubscriptionModal = false;
+                    this.showEditSubscriptionModal = false;
+                    this.showAddFoodModal = false;
+                    this.showEditFoodModal = false;
+                    
+                    // 重置所有表單數據
+                    this.currentSubscription = {
+                        name: '',
+                        nextdate: '',
+                        price: '',
+                        site: '',
+                        note: '',
+                        account: '',
+                        originalName: '',
+                        originalNextdate: ''
+                    };
+                    this.currentFood = {
+                        name: '',
+                        todate: '',
+                        amount: '',
+                        photo: '',
+                        price: '',
+                        shop: '',
+                        originalName: '',
+                        originalTodate: ''
+                    };
+                    this.editingIndex = -1;
+                    this.editingFoodIndex = -1;
                 },
                 formatDate(dateString) {
                     if (!dateString || dateString === '0000-00-00') return '未設定';
@@ -2771,6 +2819,9 @@ function getVideoType($extension) {
                     }
                 },
                 editFood(food, index) {
+                    // 先關閉所有其他模態框
+                    this.closeAllModals();
+                    
                     console.log('編輯食品 - 原始資料:', food);
                     this.currentFood = { ...food };
                     this.currentFood.originalName = food.name;
@@ -3072,9 +3123,18 @@ function getVideoType($extension) {
                     }
                 },
                 handleKeyDown(event) {
-                    // ESC 鍵關閉選單
-                    if (event.key === 'Escape' && this.showMobileMenu) {
-                        this.closeMobileMenu();
+                    // ESC 鍵關閉選單和模態框
+                    if (event.key === 'Escape') {
+                        if (this.showMobileMenu) {
+                            this.closeMobileMenu();
+                        }
+                        // 關閉所有模態框
+                        if (this.showAddSubscriptionModal || this.showEditSubscriptionModal) {
+                            this.closeModals();
+                        }
+                        if (this.showAddFoodModal || this.showEditFoodModal) {
+                            this.closeFoodModals();
+                        }
                     }
                 },
                 toggleMobileMenu() {
@@ -3101,12 +3161,33 @@ function getVideoType($extension) {
                     setTimeout(() => {
                         this.closeMobileMenu();
                     }, 150);
+                },
+                openAddSubscriptionModal() {
+                    this.closeAllModals();
+                    this.showAddSubscriptionModal = true;
+                },
+                openAddFoodModal() {
+                    this.closeAllModals();
+                    this.showAddFoodModal = true;
+                },
+                navigateAndOpenSubscriptionModal() {
+                    this.currentPage = 'subscriptions';
+                    setTimeout(() => {
+                        this.openAddSubscriptionModal();
+                    }, 100);
+                },
+                navigateAndOpenFoodModal() {
+                    this.currentPage = 'foods';
+                    setTimeout(() => {
+                        this.openAddFoodModal();
+                    }, 100);
                 }
             },
             watch: {
                 currentPage(newPage) {
-                    // 切換頁面時關閉手機選單
+                    // 切換頁面時關閉手機選單和所有模態框
                     this.closeMobileMenu();
+                    this.closeAllModals();
                     
                     if (newPage === 'gallery') {
                         this.loadImages();
