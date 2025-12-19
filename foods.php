@@ -366,23 +366,142 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: rgba(255, 255, 255, 0.3);
         }
 
+        /* 平板版本 (768px - 1024px) */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .container {
+                padding: 0 30px;
+            }
+            
+            .food-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+            
+            .main-title {
+                font-size: 42px;
+            }
+        }
+
+        /* 手機版本 (最大 768px) */
         @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .main-title {
+                font-size: 32px;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .main-logo {
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .subtitle {
+                font-size: 16px;
+            }
+
             .controls {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 15px;
             }
 
             .search-box {
                 min-width: auto;
                 width: 100%;
+                padding: 15px 20px;
+                font-size: 16px;
+            }
+            
+            .add-btn {
+                padding: 15px 25px;
+                font-size: 16px;
+                width: 100%;
             }
 
             .food-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .food-card {
+                padding: 20px 15px;
+            }
+            
+            .food-name {
+                font-size: 18px;
             }
 
             .food-details {
                 grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .food-image {
+                max-width: 150px;
+                height: 120px;
+            }
+            
+            .back-btn {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin-bottom: 20px;
+                display: inline-block;
+                width: auto;
+            }
+        }
+
+        /* 小手機版本 (最大 480px) */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .main-title {
+                font-size: 28px;
+            }
+            
+            .main-logo {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+            
+            .subtitle {
+                font-size: 14px;
+            }
+            
+            .food-card {
+                padding: 15px 12px;
+            }
+            
+            .food-name {
+                font-size: 16px;
+            }
+            
+            .food-image {
+                max-width: 120px;
+                height: 100px;
+            }
+            
+            .detail-label {
+                font-size: 12px;
+            }
+            
+            .detail-value {
+                font-size: 14px;
+            }
+            
+            .action-btn {
+                padding: 6px 10px;
+                font-size: 14px;
             }
         }
     </style>

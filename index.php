@@ -771,75 +771,396 @@ function getVideoType($extension) {
         }
 
         /* 響應式設計 */
+        /* 儀表板特殊樣式 */
+        .dashboard-button {
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        /* 手機版選單樣式 */
+        .mobile-menu-toggle {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            transition: all 0.3s;
+            z-index: 100;
+            position: relative;
+            min-width: 50px;
+            text-align: center;
+            outline: none;
+        }
+
+        .mobile-menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .mobile-menu-toggle:active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0.95);
+        }
+
+        .mobile-menu-toggle:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 2px;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu-content {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease-out;
+            overflow-y: auto;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+
+        .mobile-nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .mobile-nav-icon {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        /* 平板版本 (768px - 1024px) */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .container {
+                padding: 0 30px;
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+            }
+            
+            .main-title {
+                font-size: 42px;
+            }
+            
+            .nav-menu {
+                gap: 20px;
+            }
+            
+            .nav-item {
+                padding: 10px 18px;
+                font-size: 15px;
+            }
+            
+            /* 儀表板平板優化 */
+            .dashboard-button {
+                padding: 12px 25px !important;
+                font-size: 15px !important;
+            }
+        }
+
+        /* 手機版本 (最大 768px) */
         @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
             .nav-menu {
                 display: none;
             }
             
+            .mobile-menu-toggle {
+                display: block !important;
+                background: rgba(255, 255, 255, 0.2) !important;
+                border: 2px solid rgba(255, 255, 255, 0.3) !important;
+            }
+            
+            .mobile-menu-toggle:hover {
+                background: rgba(255, 255, 255, 0.3) !important;
+            }
+            
             .main-title {
-                font-size: 32px;
+                font-size: 28px;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .main-logo {
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .subtitle {
+                font-size: 16px;
+                margin-bottom: 40px;
             }
             
             .features-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
+                margin-top: 40px;
+            }
+            
+            .feature-card {
+                padding: 25px 20px;
+            }
+            
+            .feature-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            
+            .feature-title {
+                font-size: 18px;
             }
 
             .gallery-controls {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 15px;
             }
 
             .search-box {
                 min-width: auto;
                 width: 100%;
+                padding: 15px 20px;
+                font-size: 16px;
+            }
+            
+            .upload-btn, .add-btn {
+                padding: 15px 25px;
+                font-size: 16px;
+                width: 100%;
             }
 
             .gallery-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
                 gap: 15px;
             }
-
-            .subscription-details {
-                grid-template-columns: 1fr;
+            
+            .image-card, .video-card {
+                border-radius: 12px;
+            }
+            
+            .image-preview, .video-preview {
+                height: 120px;
             }
 
-            .subscription-header {
+            .subscription-details, .food-details {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .subscription-header, .food-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
             }
 
-            .subscription-actions {
+            .subscription-actions, .food-actions {
                 align-self: flex-end;
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .subscription-name, .food-name {
+                font-size: 18px;
             }
 
             .modal-content {
                 width: 95%;
-                margin: 20px;
+                margin: 10px;
+                max-height: 95vh;
+            }
+            
+            .modal-header {
+                padding: 20px;
+            }
+            
+            .subscription-form {
+                padding: 20px;
             }
 
             .form-actions {
                 flex-direction: column;
-                gap: 10px;
+                gap: 12px;
             }
 
-            .cancel-btn,
-            .save-btn {
+            .cancel-btn, .save-btn {
                 width: 100%;
+                padding: 15px;
+                font-size: 16px;
             }
-
-            .food-details {
-                grid-template-columns: 1fr;
+            
+            /* 儀表板手機優化 */
+            .dashboard-button {
+                padding: 12px 20px !important;
+                font-size: 14px !important;
+                width: 100% !important;
+                margin-bottom: 10px;
             }
-
-            .food-header {
+            
+            /* 快速操作按鈕手機版 */
+            .quick-actions-mobile {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
+                gap: 12px;
             }
+            
+            .quick-actions-mobile .dashboard-button {
+                width: 100% !important;
+                padding: 15px !important;
+                font-size: 16px !important;
+            }
+        }
 
-            .food-actions {
-                align-self: flex-end;
+        /* 小手機版本 (最大 480px) */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .main-title {
+                font-size: 24px;
+            }
+            
+            .main-logo {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            
+            .subtitle {
+                font-size: 14px;
+            }
+            
+            .feature-card {
+                padding: 20px 15px;
+            }
+            
+            .feature-title {
+                font-size: 16px;
+            }
+            
+            .feature-desc {
+                font-size: 14px;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 12px;
+            }
+            
+            .image-preview, .video-preview {
+                height: 100px;
+            }
+            
+            .image-info, .video-info {
+                padding: 12px;
+            }
+            
+            .image-name, .video-name {
+                font-size: 14px;
+            }
+            
+            .image-size, .video-size {
+                font-size: 12px;
+            }
+            
+            .subscription-card, .food-card {
+                padding: 20px 15px;
+            }
+            
+            .detail-label {
+                font-size: 12px;
+            }
+            
+            .detail-value {
+                font-size: 14px;
+            }
+            
+            .action-btn {
+                padding: 6px 10px;
+                font-size: 14px;
             }
         }
     </style>
@@ -875,7 +1196,50 @@ function getVideoType($extension) {
                         食品管理
                     </div>
                 </div>
+                
+                <!-- 手機版漢堡選單 -->
+                <button class="mobile-menu-toggle" @click="showMobileMenu = !showMobileMenu" type="button">
+                    ☰
+                </button>
             </nav>
+
+            <!-- 手機版選單 -->
+            <div class="mobile-menu" v-if="showMobileMenu" @click="showMobileMenu = false">
+                <div class="mobile-menu-content" @click.stop>
+                    <div class="mobile-menu-header">
+                        <div style="display: flex; align-items: center;">
+                            <div class="logo-icon" style="margin-right: 10px;">🤖</div>
+                            <span style="font-weight: bold;">鋒兄AI系統</span>
+                        </div>
+                        <button class="mobile-menu-close" @click="showMobileMenu = false">✕</button>
+                    </div>
+                    
+                    <div class="mobile-nav-item" :class="{ active: currentPage === 'home' }" @click="currentPage = 'home'; showMobileMenu = false">
+                        <span class="mobile-nav-icon">🏠</span>
+                        首頁
+                    </div>
+                    <div class="mobile-nav-item" :class="{ active: currentPage === 'dashboard' }" @click="currentPage = 'dashboard'; showMobileMenu = false">
+                        <span class="mobile-nav-icon">📊</span>
+                        儀表板
+                    </div>
+                    <div class="mobile-nav-item" :class="{ active: currentPage === 'gallery' }" @click="currentPage = 'gallery'; showMobileMenu = false">
+                        <span class="mobile-nav-icon">🖼️</span>
+                        圖片庫
+                    </div>
+                    <div class="mobile-nav-item" :class="{ active: currentPage === 'videos' }" @click="currentPage = 'videos'; showMobileMenu = false">
+                        <span class="mobile-nav-icon">🎬</span>
+                        影片庫
+                    </div>
+                    <div class="mobile-nav-item" :class="{ active: currentPage === 'subscriptions' }" @click="currentPage = 'subscriptions'; showMobileMenu = false">
+                        <span class="mobile-nav-icon">📋</span>
+                        訂閱管理
+                    </div>
+                    <div class="mobile-nav-item" :class="{ active: currentPage === 'foods' }" @click="currentPage = 'foods'; showMobileMenu = false">
+                        <span class="mobile-nav-icon">🍽️</span>
+                        食品管理
+                    </div>
+                </div>
+            </div>
 
             <!-- 主要內容 -->
             <main class="main-content" v-if="currentPage === 'home'">
@@ -909,6 +1273,133 @@ function getVideoType($extension) {
                         <div class="feature-icon" style="background: #96ceb4;">🎬</div>
                         <div class="feature-title">影片存放於 - InfinityFree</div>
                         <div class="feature-desc">高效的影片儲存和串流播放服務</div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- 儀表板頁面 -->
+            <main class="gallery-container" v-if="currentPage === 'dashboard'">
+                <h1 class="main-title">
+                    <div class="main-logo" style="background: #ff6b6b;">📊</div>
+                    系統儀表板
+                </h1>
+                <p class="subtitle">即時監控訂閱和食品到期狀態</p>
+
+                <!-- 統計卡片 -->
+                <div class="features-grid" style="margin-top: 40px;">
+                    <!-- 訂閱管理統計 -->
+                    <div class="feature-card" style="background: rgba(69, 183, 209, 0.15); border-left: 4px solid #45b7d1;">
+                        <div class="feature-icon" style="background: #45b7d1;">📋</div>
+                        <div class="feature-title">訂閱管理</div>
+                        <div class="feature-desc" style="margin-bottom: 20px;">訂閱服務到期提醒</div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 14px; opacity: 0.9;">3天內到期</span>
+                                    <span style="font-size: 24px; font-weight: bold; color: #ff6b6b;">{{ dashboardStats.subscriptions.threeDays }}</span>
+                                </div>
+                                <div v-if="dashboardStats.subscriptions.threeDays > 0" style="margin-top: 10px; font-size: 13px; color: #ff6b6b;">
+                                    ⚠️ 請盡快處理即將到期的訂閱
+                                </div>
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 14px; opacity: 0.9;">7天內到期</span>
+                                    <span style="font-size: 24px; font-weight: bold; color: #ffa726;">{{ dashboardStats.subscriptions.sevenDays }}</span>
+                                </div>
+                                <div v-if="dashboardStats.subscriptions.sevenDays > 0" style="margin-top: 10px; font-size: 13px; color: #ffa726;">
+                                    💡 建議提前準備續訂
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button @click="currentPage = 'subscriptions'" class="dashboard-button" style="margin-top: 20px; width: 100%; padding: 10px; background: #45b7d1; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                            查看詳情 →
+                        </button>
+                    </div>
+
+                    <!-- 食品管理統計 -->
+                    <div class="feature-card" style="background: rgba(150, 206, 180, 0.15); border-left: 4px solid #96ceb4;">
+                        <div class="feature-icon" style="background: #96ceb4;">🍽️</div>
+                        <div class="feature-title">食品管理</div>
+                        <div class="feature-desc" style="margin-bottom: 20px;">食品到期日期監控</div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 14px; opacity: 0.9;">7天內到期</span>
+                                    <span style="font-size: 24px; font-weight: bold; color: #ff6b6b;">{{ dashboardStats.foods.sevenDays }}</span>
+                                </div>
+                                <div v-if="dashboardStats.foods.sevenDays > 0" style="margin-top: 10px; font-size: 13px; color: #ff6b6b;">
+                                    ⚠️ 請盡快食用即將過期的食品
+                                </div>
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 14px; opacity: 0.9;">30天內到期</span>
+                                    <span style="font-size: 24px; font-weight: bold; color: #ffa726;">{{ dashboardStats.foods.thirtyDays }}</span>
+                                </div>
+                                <div v-if="dashboardStats.foods.thirtyDays > 0" style="margin-top: 10px; font-size: 13px; color: #ffa726;">
+                                    💡 注意食品保存期限
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button @click="currentPage = 'foods'" class="dashboard-button" style="margin-top: 20px; width: 100%; padding: 10px; background: #96ceb4; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                            查看詳情 →
+                        </button>
+                    </div>
+
+                    <!-- 總覽統計 -->
+                    <div class="feature-card" style="background: rgba(255, 107, 107, 0.15); border-left: 4px solid #ff6b6b;">
+                        <div class="feature-icon" style="background: #ff6b6b;">📈</div>
+                        <div class="feature-title">系統總覽</div>
+                        <div class="feature-desc" style="margin-bottom: 20px;">資料統計概覽</div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 14px; opacity: 0.9;">訂閱總數</span>
+                                    <span style="font-size: 24px; font-weight: bold; color: #4ecdc4;">{{ subscriptions.length }}</span>
+                                </div>
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 14px; opacity: 0.9;">食品總數</span>
+                                    <span style="font-size: 24px; font-weight: bold; color: #4ecdc4;">{{ foods.length }}</span>
+                                </div>
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 14px; opacity: 0.9;">圖片總數</span>
+                                    <span style="font-size: 24px; font-weight: bold; color: #4ecdc4;">{{ images.length }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 快速操作 -->
+                <div style="margin-top: 60px; text-align: center;">
+                    <h2 style="font-size: 24px; margin-bottom: 30px;">快速操作</h2>
+                    <div class="quick-actions-mobile" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                        <button @click="currentPage = 'subscriptions'; showAddSubscriptionModal = true" class="dashboard-button" style="padding: 15px 30px; background: #45b7d1; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px;">
+                            ➕ 新增訂閱
+                        </button>
+                        <button @click="currentPage = 'foods'; showAddFoodModal = true" class="dashboard-button" style="padding: 15px 30px; background: #96ceb4; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px;">
+                            ➕ 新增食品
+                        </button>
+                        <button @click="currentPage = 'gallery'" class="dashboard-button" style="padding: 15px 30px; background: #4ecdc4; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px;">
+                            🖼️ 圖片庫
+                        </button>
+                        <button @click="currentPage = 'videos'" class="dashboard-button" style="padding: 15px 30px; background: #ff6b6b; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px;">
+                            🎬 影片庫
+                        </button>
                     </div>
                 </div>
             </main>
@@ -1261,7 +1752,7 @@ function getVideoType($extension) {
             </main>
 
             <!-- 其他頁面內容 -->
-            <main class="main-content" v-else-if="currentPage !== 'home' && currentPage !== 'gallery' && currentPage !== 'videos' && currentPage !== 'subscriptions' && currentPage !== 'foods'">
+            <main class="main-content" v-else-if="currentPage !== 'home' && currentPage !== 'dashboard' && currentPage !== 'gallery' && currentPage !== 'videos' && currentPage !== 'subscriptions' && currentPage !== 'foods'">
                 <h1 class="main-title">{{ getPageTitle() }}</h1>
                 <p class="subtitle">{{ getPageDescription() }}</p>
                 <div style="background: rgba(255,255,255,0.1); padding: 40px; border-radius: 16px; margin-top: 40px;">
@@ -1323,7 +1814,18 @@ function getVideoType($extension) {
                         originalName: '',
                         originalTodate: ''
                     },
-                    editingFoodIndex: -1
+                    editingFoodIndex: -1,
+                    dashboardStats: {
+                        subscriptions: {
+                            threeDays: 0,
+                            sevenDays: 0
+                        },
+                        foods: {
+                            sevenDays: 0,
+                            thirtyDays: 0
+                        }
+                    },
+                    showMobileMenu: false
                 }
             },
             mounted() {
@@ -1331,6 +1833,10 @@ function getVideoType($extension) {
                 this.loadVideos();
                 this.loadSubscriptions();
                 this.loadFoods();
+                // 初始化完成後計算儀表板統計
+                setTimeout(() => {
+                    this.calculateDashboardStats();
+                }, 1000);
             },
             methods: {
                 getPageTitle() {
@@ -1444,6 +1950,7 @@ function getVideoType($extension) {
                         if (data.success) {
                             this.subscriptions = data.data || [];
                             this.filteredSubscriptions = [...this.subscriptions];
+                            this.calculateDashboardStats();
                         } else {
                             console.error('載入訂閱失敗:', data.message);
                             this.subscriptions = [];
@@ -1635,6 +2142,7 @@ function getVideoType($extension) {
                         if (data.success) {
                             this.foods = data.data || [];
                             this.filteredFoods = [...this.foods];
+                            this.calculateDashboardStats();
                             
                             // 調試：檢查載入的資料
                             console.log('載入的食品資料:', this.foods);
@@ -1761,6 +2269,78 @@ function getVideoType($extension) {
                         originalTodate: ''
                     };
                     this.editingFoodIndex = -1;
+                },
+                // 儀表板統計方法
+                calculateDashboardStats() {
+                    // 計算訂閱統計
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    const threeDaysLater = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+                    const sevenDaysLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+                    const thirtyDaysLater = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+                    
+                    // 訂閱統計
+                    let subscriptionThreeDays = 0;
+                    let subscriptionSevenDays = 0;
+                    
+                    this.subscriptions.forEach(subscription => {
+                        if (!subscription.nextdate || subscription.nextdate === '0000-00-00') return;
+                        
+                        let date;
+                        if (typeof subscription.nextdate === 'string' && subscription.nextdate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                            date = new Date(subscription.nextdate + 'T00:00:00');
+                        } else {
+                            date = new Date(subscription.nextdate);
+                        }
+                        
+                        if (isNaN(date.getTime()) || date.getFullYear() === 1970) return;
+                        
+                        if (date >= today && date <= threeDaysLater) {
+                            subscriptionThreeDays++;
+                        }
+                        if (date >= today && date <= sevenDaysLater) {
+                            subscriptionSevenDays++;
+                        }
+                    });
+                    
+                    // 食品統計
+                    let foodSevenDays = 0;
+                    let foodThirtyDays = 0;
+                    
+                    this.foods.forEach(food => {
+                        if (!food.todate || food.todate === '0000-00-00') return;
+                        
+                        let date;
+                        if (typeof food.todate === 'string' && food.todate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                            date = new Date(food.todate + 'T00:00:00');
+                        } else {
+                            date = new Date(food.todate);
+                        }
+                        
+                        if (isNaN(date.getTime()) || date.getFullYear() === 1970) return;
+                        
+                        if (date >= today && date <= sevenDaysLater) {
+                            foodSevenDays++;
+                        }
+                        if (date >= today && date <= thirtyDaysLater) {
+                            foodThirtyDays++;
+                        }
+                    });
+                    
+                    // 更新統計數據
+                    this.dashboardStats = {
+                        subscriptions: {
+                            threeDays: subscriptionThreeDays,
+                            sevenDays: subscriptionSevenDays
+                        },
+                        foods: {
+                            sevenDays: foodSevenDays,
+                            thirtyDays: foodThirtyDays
+                        }
+                    };
+                    
+                    console.log('儀表板統計更新:', this.dashboardStats);
                 }
             },
             watch: {
@@ -1773,6 +2353,8 @@ function getVideoType($extension) {
                         this.loadSubscriptions();
                     } else if (newPage === 'foods') {
                         this.loadFoods();
+                    } else if (newPage === 'dashboard') {
+                        this.calculateDashboardStats();
                     }
                 }
             }
