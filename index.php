@@ -131,7 +131,20 @@ function getVideoType($extension) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>鋒兄AI資訊系統</title>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.js"></script>
+    <script>
+        // 檢查 Vue 是否正確載入
+        window.addEventListener('load', function() {
+            if (typeof Vue === 'undefined') {
+                console.error('Vue.js 未正確載入！');
+                alert('Vue.js 載入失敗，請檢查網路連線');
+                // 顯示靜態內容
+                document.body.innerHTML = '<div style="padding: 20px; text-align: center; color: red;"><h1>Vue.js 載入失敗</h1><p>請檢查網路連線並重新載入頁面</p></div>';
+            } else {
+                console.log('Vue.js 載入成功，版本:', Vue.version);
+            }
+        });
+    </script>
     <style>
         * {
             margin: 0;
@@ -3117,6 +3130,15 @@ function getVideoType($extension) {
                 }
             }
         }).mount('#app');
+        
+        // 添加全局錯誤處理
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript 錯誤:', e.error);
+        });
+        
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('未處理的 Promise 錯誤:', e.reason);
+        });
     </script>
 </body>
 </html>
