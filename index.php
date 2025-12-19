@@ -1626,7 +1626,7 @@ function getVideoType($extension) {
                         const formData = new FormData();
                         formData.append('action', 'getFoods');
                         
-                        const response = await fetch('foods_api.php', {
+                        const response = await fetch('foods.php', {
                             method: 'POST',
                             body: formData
                         });
@@ -1687,7 +1687,7 @@ function getVideoType($extension) {
                         formData.append('name', food.name);
                         formData.append('todate', food.todate);
                         
-                        const response = await fetch('foods_api.php', {
+                        const response = await fetch('foods.php', {
                             method: 'POST',
                             body: formData
                         });
@@ -1729,7 +1729,7 @@ function getVideoType($extension) {
                             formData.append('originalTodate', this.currentFood.originalTodate);
                         }
                         
-                        const response = await fetch('foods_api.php', {
+                        const response = await fetch('foods.php', {
                             method: 'POST',
                             body: formData
                         });
