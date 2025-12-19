@@ -18,11 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($action) {
         case 'getFoods':
             try {
-                $stmt = $pdo->query("SELECT * FROM food ORDER BY todate ASC");
+                // 與訂閱管理保持一致：移除後端排序，讓前端處理
+                $stmt = $pdo->query("SELECT * FROM food");
                 $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                
-                // 調試：記錄查詢結果
-                error_log("Foods API - 查詢結果: " . json_encode($foods));
                 
                 // 確保資料類型正確
                 foreach ($foods as &$food) {
@@ -60,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 error_log("AddFood - 接收到的資料: " . json_encode($_POST));
                 error_log("AddFood - 處理後的資料: name=$name, todate=$todate, amount=$amount, price=$price, shop=$shop, photo=$photo");
                 
-                // 驗證日期格式
+                // 驗證日期格式（與訂閱管理保持一致）
                 if ($todate && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $todate)) {
                     throw new Exception("日期格式錯誤: $todate");
                 }
@@ -229,24 +227,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: #85b8a3;
         }
 
-        .food-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        .food-list {
+            display: flex;
+            flex-direction: column;
             gap: 20px;
+            margin-top: 30px;
         }
 
         .food-card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 16px;
-            padding: 20px;
+            padding: 25px;
             border-left: 4px solid #96ceb4;
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .food-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .food-card.expired {
@@ -257,10 +256,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-left-color: #ffa726;
         }
 
+        .food-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
         .food-name {
             font-size: 20px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin: 0;
             color: #FFD700;
         }
 
@@ -282,26 +288,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .food-details {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            font-size: 14px;
-            margin-bottom: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
         }
 
         .detail-item {
             display: flex;
             flex-direction: column;
+            gap: 5px;
         }
 
         .detail-label {
+            font-size: 14px;
             opacity: 0.8;
-            font-size: 12px;
-            margin-bottom: 4px;
+            font-weight: 500;
         }
 
         .detail-value {
-            font-weight: bold;
             font-size: 16px;
+            font-weight: bold;
         }
 
         .detail-value.price {
@@ -323,7 +328,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .food-actions {
             display: flex;
             gap: 10px;
-            justify-content: flex-end;
         }
 
         .action-btn {
@@ -376,23 +380,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: rgba(255, 255, 255, 0.3);
         }
 
-        /* 平板版本 (768px - 1024px) */
-        @media (max-width: 1024px) and (min-width: 769px) {
-            .container {
-                padding: 0 30px;
-            }
-            
-            .food-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 25px;
-            }
-            
-            .main-title {
-                font-size: 42px;
-            }
-        }
-
-        /* 手機版本 (最大 768px) */
+        /* 響應式設計 */
         @media (max-width: 768px) {
             .container {
                 padding: 0 15px;
@@ -434,11 +422,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 font-size: 16px;
                 width: 100%;
             }
-
-            .food-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
             
             .food-card {
                 padding: 20px 15px;
@@ -465,6 +448,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 margin-bottom: 20px;
                 display: inline-block;
                 width: auto;
+            }
+
+            .food-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .food-actions {
+                align-self: flex-end;
             }
         }
 
@@ -702,14 +695,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </button>
             </div>
 
-            <div class="food-grid" v-if="filteredFoods.length > 0">
+            <div class="food-list" v-if="filteredFoods.length > 0">
                 <div 
                     class="food-card" 
                     v-for="(food, index) in filteredFoods" 
                     :key="index"
                     :class="{ 'expired': isExpired(food.todate), 'expiring-soon': isExpiringSoon(food.todate) }"
                 >
-                    <div class="food-name">{{ food.name }}</div>
+                    <div class="food-header">
+                        <h3 class="food-name">{{ food.name }}</h3>
+                        <div class="food-actions">
+                            <button class="action-btn edit-btn" @click="editFood(food, index)">✏️</button>
+                            <button class="action-btn delete-btn" @click="deleteFood(index)">🗑️</button>
+                        </div>
+                    </div>
                     
                     <img 
                         v-if="food.photo" 
@@ -718,30 +717,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         class="food-image"
                         @click="viewImage(food.photo)"
                         @error="handleImageError"
+                        style="margin-bottom: 15px;"
                     >
                     
                     <div class="food-details">
                         <div class="detail-item">
-                            <span class="detail-label">到期日期:</span>
+                            <span class="detail-label">到期日期</span>
                             <span class="detail-value" :class="getDateClass(food.todate)">{{ formatDate(food.todate) }}</span>
                         </div>
                         <div class="detail-item" v-if="food.amount">
-                            <span class="detail-label">數量:</span>
+                            <span class="detail-label">數量</span>
                             <span class="detail-value">{{ food.amount }}</span>
                         </div>
                         <div class="detail-item" v-if="food.price && food.price > 0">
-                            <span class="detail-label">價格:</span>
+                            <span class="detail-label">價格</span>
                             <span class="detail-value price">NT$ {{ food.price }}</span>
                         </div>
                         <div class="detail-item" v-if="food.shop">
-                            <span class="detail-label">商店:</span>
+                            <span class="detail-label">商店</span>
                             <span class="detail-value">{{ food.shop }}</span>
                         </div>
-                    </div>
-                    
-                    <div class="food-actions">
-                        <button class="action-btn edit-btn" @click="editFood(food, index)">✏️</button>
-                        <button class="action-btn delete-btn" @click="deleteFood(index)">🗑️</button>
                     </div>
                 </div>
             </div>
@@ -841,6 +836,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         
                         if (data.success) {
                             this.foods = data.data || [];
+                            // 與訂閱管理保持一致：前端排序，按到期日期由近至遠
+                            this.foods.sort((a, b) => {
+                                const dateA = new Date(a.todate + 'T00:00:00');
+                                const dateB = new Date(b.todate + 'T00:00:00');
+                                return dateA - dateB;
+                            });
                             this.filteredFoods = [...this.foods];
                         } else {
                             console.error('載入食品失敗:', data.message);
@@ -870,8 +871,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         const food = this.filteredFoods[index];
                         const formData = new FormData();
                         formData.append('action', 'deleteFood');
-                        formData.append('name', food.name);
-                        formData.append('todate', food.todate);
+                        formData.append('id', food.id);
                         
                         const response = await fetch('foods.php', {
                             method: 'POST',

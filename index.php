@@ -2769,20 +2769,14 @@ function getVideoType($extension) {
                         
                         if (data.success) {
                             this.foods = data.data || [];
+                            // 與訂閱管理保持一致：前端排序，按到期日期由近至遠
+                            this.foods.sort((a, b) => {
+                                const dateA = new Date(a.todate + 'T00:00:00');
+                                const dateB = new Date(b.todate + 'T00:00:00');
+                                return dateA - dateB;
+                            });
                             this.filteredFoods = [...this.foods];
                             this.calculateDashboardStats();
-                            
-                            // 調試：檢查載入的資料
-                            console.log('載入的食品資料:', this.foods);
-                            this.foods.forEach((food, index) => {
-                                console.log(`食品 ${index}:`, {
-                                    name: food.name,
-                                    todate: food.todate,
-                                    todateType: typeof food.todate,
-                                    amount: food.amount,
-                                    price: food.price
-                                });
-                            });
                         } else {
                             console.error('載入食品失敗:', data.message);
                             this.foods = [];
