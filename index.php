@@ -568,6 +568,17 @@ function getVideoType($extension) {
             color: #4ecdc4;
         }
 
+        .detail-value a {
+            color: #4ecdc4;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .detail-value a:hover {
+            color: #45b7d1;
+            text-decoration: underline;
+        }
+
         /* 模態框樣式 */
         .modal-overlay {
             position: fixed;
@@ -1057,7 +1068,11 @@ function getVideoType($extension) {
                             </div>
                             <div class="detail-item" v-if="subscription.site">
                                 <span class="detail-label">網站:</span>
-                                <span class="detail-value">{{ subscription.site }}</span>
+                                <span class="detail-value">
+                                    <a :href="subscription.site" target="_blank" style="color: #4ecdc4; text-decoration: none;">
+                                        {{ subscription.site }}
+                                    </a>
+                                </span>
                             </div>
                             <div class="detail-item" v-if="subscription.account">
                                 <span class="detail-label">帳號:</span>
