@@ -980,6 +980,39 @@ function getVideoType($extension) {
             transform: translateY(-3px);
         }
 
+        /* 到期項目動畫 */
+        .expiring-item {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 緊急提醒樣式 */
+        .urgent-alert {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+            }
+        }
+
         /* 手機版選單樣式 */
         .mobile-menu-toggle {
             display: none;
@@ -1025,11 +1058,13 @@ function getVideoType($extension) {
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s, visibility 0.3s;
+            pointer-events: none;
         }
 
         .mobile-menu.show {
             opacity: 1;
             visibility: visible;
+            pointer-events: auto;
         }
 
         .mobile-menu-content {
@@ -1544,7 +1579,7 @@ function getVideoType($extension) {
             </nav>
 
             <!-- 手機版選單 -->
-            <div class="mobile-menu" :class="{ show: showMobileMenu }" v-show="showMobileMenu" @click="showMobileMenu = false">
+            <div class="mobile-menu" :class="{ show: showMobileMenu }" v-show="showMobileMenu" @click.self="showMobileMenu = false">
                 <div class="mobile-menu-content" @click.stop>
                     <div class="mobile-menu-header">
                         <div style="display: flex; align-items: center;">
@@ -1667,82 +1702,101 @@ function getVideoType($extension) {
 
             <!-- 儀表板頁面 -->
             <main class="gallery-container" v-if="currentPage === 'dashboard'">
-                <h1 class="main-title">
-                    <div class="main-logo" style="background: #ff6b6b;">📊</div>
-                    系統儀表板
-                </h1>
-                <p class="subtitle">即時監控訂閱和食品到期狀態</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div>
+                        <h1 class="main-title">
+                            <div class="main-logo" style="background: #ff6b6b;">📊</div>
+                            系統儀表板
+                        </h1>
+                        <p class="subtitle">即時監控訂閱和食品到期狀態</p>
+                    </div>
+                    <button @click="refreshDashboard" class="upload-btn" style="background: #ff6b6b; margin-top: 0;">
+                        🔄 刷新數據
+                    </button>
+                </div>
 
                 <!-- 統計卡片 -->
                 <div class="features-grid" style="margin-top: 40px;">
                     <!-- 訂閱管理統計 -->
-                    <div class="feature-card" style="background: rgba(69, 183, 209, 0.15); border-left: 4px solid #45b7d1;">
+                    <div class="feature-card stat-card" style="background: rgba(69, 183, 209, 0.15); border-left: 4px solid #45b7d1;">
                         <div class="feature-icon" style="background: #45b7d1;">📋</div>
                         <div class="feature-title">訂閱管理</div>
                         <div class="feature-desc" style="margin-bottom: 20px;">訂閱服務到期提醒</div>
                         
                         <div style="display: flex; flex-direction: column; gap: 15px;">
-                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid #ff6b6b;">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 14px; opacity: 0.9;">3天內到期</span>
-                                    <span style="font-size: 24px; font-weight: bold; color: #ff6b6b;">{{ dashboardStats.subscriptions.threeDays }}</span>
+                                    <span style="font-size: 14px; opacity: 0.9;">⚠️ 3天內到期</span>
+                                    <span style="font-size: 28px; font-weight: bold; color: #ff6b6b;">{{ dashboardStats.subscriptions.threeDays }}</span>
                                 </div>
-                                <div v-if="dashboardStats.subscriptions.threeDays > 0" style="margin-top: 10px; font-size: 13px; color: #ff6b6b;">
-                                    ⚠️ 請盡快處理即將到期的訂閱
+                                <div v-if="dashboardStats.subscriptions.threeDays > 0" style="margin-top: 10px; font-size: 13px; color: #ff6b6b; font-weight: 500;">
+                                    請盡快處理即將到期的訂閱
+                                </div>
+                                <div v-else style="margin-top: 10px; font-size: 13px; color: #4ecdc4; opacity: 0.8;">
+                                    ✓ 近期無到期項目
                                 </div>
                             </div>
                             
-                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid #ffa726;">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 14px; opacity: 0.9;">7天內到期</span>
-                                    <span style="font-size: 24px; font-weight: bold; color: #ffa726;">{{ dashboardStats.subscriptions.sevenDays }}</span>
+                                    <span style="font-size: 14px; opacity: 0.9;">💡 7天內到期</span>
+                                    <span style="font-size: 28px; font-weight: bold; color: #ffa726;">{{ dashboardStats.subscriptions.sevenDays }}</span>
                                 </div>
-                                <div v-if="dashboardStats.subscriptions.sevenDays > 0" style="margin-top: 10px; font-size: 13px; color: #ffa726;">
-                                    💡 建議提前準備續訂
+                                <div v-if="dashboardStats.subscriptions.sevenDays > 0" style="margin-top: 10px; font-size: 13px; color: #ffa726; font-weight: 500;">
+                                    建議提前準備續訂
+                                </div>
+                                <div v-else style="margin-top: 10px; font-size: 13px; color: #4ecdc4; opacity: 0.8;">
+                                    ✓ 一週內無到期項目
                                 </div>
                             </div>
                         </div>
                         
-                        <button @click="currentPage = 'subscriptions'" class="dashboard-button" style="margin-top: 20px; width: 100%; padding: 10px; background: #45b7d1; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
-                            查看詳情 →
+                        <button @click="currentPage = 'subscriptions'" class="dashboard-button" style="margin-top: 20px; width: 100%; padding: 12px; background: #45b7d1; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s;">
+                            查看所有訂閱 →
                         </button>
                     </div>
 
                     <!-- 食品管理統計 -->
-                    <div class="feature-card" style="background: rgba(150, 206, 180, 0.15); border-left: 4px solid #96ceb4;">
+                    <div class="feature-card stat-card" style="background: rgba(150, 206, 180, 0.15); border-left: 4px solid #96ceb4;">
                         <div class="feature-icon" style="background: #96ceb4;">🍽️</div>
                         <div class="feature-title">食品管理</div>
                         <div class="feature-desc" style="margin-bottom: 20px;">食品到期日期監控</div>
                         
                         <div style="display: flex; flex-direction: column; gap: 15px;">
-                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid #ff6b6b;">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 14px; opacity: 0.9;">7天內到期</span>
-                                    <span style="font-size: 24px; font-weight: bold; color: #ff6b6b;">{{ dashboardStats.foods.sevenDays }}</span>
+                                    <span style="font-size: 14px; opacity: 0.9;">⚠️ 7天內到期</span>
+                                    <span style="font-size: 28px; font-weight: bold; color: #ff6b6b;">{{ dashboardStats.foods.sevenDays }}</span>
                                 </div>
-                                <div v-if="dashboardStats.foods.sevenDays > 0" style="margin-top: 10px; font-size: 13px; color: #ff6b6b;">
-                                    ⚠️ 請盡快食用即將過期的食品
+                                <div v-if="dashboardStats.foods.sevenDays > 0" style="margin-top: 10px; font-size: 13px; color: #ff6b6b; font-weight: 500;">
+                                    請盡快食用即將過期的食品
+                                </div>
+                                <div v-else style="margin-top: 10px; font-size: 13px; color: #4ecdc4; opacity: 0.8;">
+                                    ✓ 一週內無到期食品
                                 </div>
                             </div>
                             
-                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
+                            <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid #ffa726;">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 14px; opacity: 0.9;">30天內到期</span>
-                                    <span style="font-size: 24px; font-weight: bold; color: #ffa726;">{{ dashboardStats.foods.thirtyDays }}</span>
+                                    <span style="font-size: 14px; opacity: 0.9;">💡 30天內到期</span>
+                                    <span style="font-size: 28px; font-weight: bold; color: #ffa726;">{{ dashboardStats.foods.thirtyDays }}</span>
                                 </div>
-                                <div v-if="dashboardStats.foods.thirtyDays > 0" style="margin-top: 10px; font-size: 13px; color: #ffa726;">
-                                    💡 注意食品保存期限
+                                <div v-if="dashboardStats.foods.thirtyDays > 0" style="margin-top: 10px; font-size: 13px; color: #ffa726; font-weight: 500;">
+                                    注意食品保存期限
+                                </div>
+                                <div v-else style="margin-top: 10px; font-size: 13px; color: #4ecdc4; opacity: 0.8;">
+                                    ✓ 一個月內無到期食品
                                 </div>
                             </div>
                         </div>
                         
-                        <button @click="currentPage = 'foods'" class="dashboard-button" style="margin-top: 20px; width: 100%; padding: 10px; background: #96ceb4; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
-                            查看詳情 →
+                        <button @click="currentPage = 'foods'" class="dashboard-button" style="margin-top: 20px; width: 100%; padding: 12px; background: #96ceb4; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s;">
+                            查看所有食品 →
                         </button>
                     </div>
 
                     <!-- 總覽統計 -->
-                    <div class="feature-card" style="background: rgba(255, 107, 107, 0.15); border-left: 4px solid #ff6b6b;">
+                    <div class="feature-card stat-card" style="background: rgba(255, 107, 107, 0.15); border-left: 4px solid #ff6b6b;">
                         <div class="feature-icon" style="background: #ff6b6b;">📈</div>
                         <div class="feature-title">系統總覽</div>
                         <div class="feature-desc" style="margin-bottom: 20px;">資料統計概覽</div>
@@ -1750,22 +1804,22 @@ function getVideoType($extension) {
                         <div style="display: flex; flex-direction: column; gap: 15px;">
                             <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 14px; opacity: 0.9;">訂閱總數</span>
-                                    <span style="font-size: 24px; font-weight: bold; color: #4ecdc4;">{{ subscriptions.length }}</span>
+                                    <span style="font-size: 14px; opacity: 0.9;">📋 訂閱總數</span>
+                                    <span style="font-size: 28px; font-weight: bold; color: #4ecdc4;">{{ subscriptions.length }}</span>
                                 </div>
                             </div>
                             
                             <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 14px; opacity: 0.9;">食品總數</span>
-                                    <span style="font-size: 24px; font-weight: bold; color: #4ecdc4;">{{ foods.length }}</span>
+                                    <span style="font-size: 14px; opacity: 0.9;">🍽️ 食品總數</span>
+                                    <span style="font-size: 28px; font-weight: bold; color: #4ecdc4;">{{ foods.length }}</span>
                                 </div>
                             </div>
                             
                             <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 14px; opacity: 0.9;">圖片總數</span>
-                                    <span style="font-size: 24px; font-weight: bold; color: #4ecdc4;">{{ images.length }}</span>
+                                    <span style="font-size: 14px; opacity: 0.9;">🖼️ 圖片總數</span>
+                                    <span style="font-size: 28px; font-weight: bold; color: #4ecdc4;">{{ images.length }}</span>
                                 </div>
                             </div>
                         </div>
@@ -1784,7 +1838,9 @@ function getVideoType($extension) {
                                 v-for="subscription in expiringSubscriptions" 
                                 :key="subscription.name + subscription.nextdate"
                                 class="expiring-item subscription-item"
+                                :class="{ 'urgent-alert': getDaysUntilExpiry(subscription.nextdate) <= 0 }"
                                 @click="currentPage = 'subscriptions'"
+                                style="cursor: pointer;"
                             >
                                 <div class="expiring-icon" style="background: #45b7d1;">📋</div>
                                 <div class="expiring-content">
@@ -1793,11 +1849,14 @@ function getVideoType($extension) {
                                         到期日: {{ formatDate(subscription.nextdate) }}
                                     </div>
                                     <div class="expiring-price" v-if="subscription.price && subscription.price > 0">
-                                        NT$ {{ subscription.price }}
+                                        💰 NT$ {{ subscription.price }}
+                                    </div>
+                                    <div class="expiring-shop" v-if="subscription.site">
+                                        🌐 {{ subscription.site }}
                                     </div>
                                 </div>
-                                <div class="expiring-days">
-                                    {{ getDaysUntilExpiry(subscription.nextdate) }}天後
+                                <div class="expiring-days" :style="getDaysUntilExpiry(subscription.nextdate) <= 0 ? 'background: rgba(255, 107, 107, 0.4); color: #ff6b6b; font-weight: bold;' : getDaysUntilExpiry(subscription.nextdate) <= 3 ? 'background: rgba(255, 167, 38, 0.3); color: #ffa726; font-weight: bold;' : ''">
+                                    {{ getDaysText(subscription.nextdate) }}
                                 </div>
                             </div>
                         </div>
@@ -1813,7 +1872,9 @@ function getVideoType($extension) {
                                 v-for="food in expiringFoods" 
                                 :key="food.name + food.todate"
                                 class="expiring-item food-item"
+                                :class="{ 'urgent-alert': getDaysUntilExpiry(food.todate) <= 0 }"
                                 @click="currentPage = 'foods'"
+                                style="cursor: pointer;"
                             >
                                 <div class="expiring-icon" style="background: #96ceb4;">🍽️</div>
                                 <div class="expiring-content">
@@ -1822,11 +1883,14 @@ function getVideoType($extension) {
                                         到期日: {{ formatDate(food.todate) }}
                                     </div>
                                     <div class="expiring-shop" v-if="food.shop">
-                                        購於: {{ food.shop }}
+                                        🏪 購於: {{ food.shop }}
+                                    </div>
+                                    <div class="expiring-price" v-if="food.price && food.price > 0">
+                                        💰 NT$ {{ food.price }}
                                     </div>
                                 </div>
-                                <div class="expiring-days">
-                                    {{ getDaysUntilExpiry(food.todate) }}天後
+                                <div class="expiring-days" :style="getDaysUntilExpiry(food.todate) <= 0 ? 'background: rgba(255, 107, 107, 0.4); color: #ff6b6b; font-weight: bold;' : getDaysUntilExpiry(food.todate) <= 3 ? 'background: rgba(255, 167, 38, 0.3); color: #ffa726; font-weight: bold;' : ''">
+                                    {{ getDaysText(food.todate) }}
                                 </div>
                             </div>
                         </div>
@@ -1837,6 +1901,29 @@ function getVideoType($extension) {
                         <div style="font-size: 48px; margin-bottom: 20px;">✅</div>
                         <h3 style="color: #4ecdc4; margin-bottom: 10px;">太棒了！</h3>
                         <p style="opacity: 0.8;">目前沒有即將到期的訂閱或食品</p>
+                        <p style="opacity: 0.6; font-size: 14px; margin-top: 10px;">系統會自動監控7天內到期的項目</p>
+                    </div>
+
+                    <!-- 到期狀況總結 -->
+                    <div v-if="expiringSubscriptions.length > 0 || expiringFoods.length > 0" style="margin-top: 40px; padding: 30px; background: rgba(255, 255, 255, 0.05); border-radius: 16px; text-align: center;">
+                        <h3 style="color: #FFD700; margin-bottom: 20px;">📋 到期狀況總結</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                            <div style="background: rgba(69, 183, 209, 0.1); padding: 20px; border-radius: 12px; border-left: 3px solid #45b7d1;">
+                                <div style="font-size: 24px; font-weight: bold; color: #45b7d1;">{{ expiringSubscriptions.length }}</div>
+                                <div style="font-size: 14px; opacity: 0.9;">即將到期訂閱</div>
+                            </div>
+                            <div style="background: rgba(150, 206, 180, 0.1); padding: 20px; border-radius: 12px; border-left: 3px solid #96ceb4;">
+                                <div style="font-size: 24px; font-weight: bold; color: #96ceb4;">{{ expiringFoods.length }}</div>
+                                <div style="font-size: 14px; opacity: 0.9;">即將到期食品</div>
+                            </div>
+                            <div style="background: rgba(255, 107, 107, 0.1); padding: 20px; border-radius: 12px; border-left: 3px solid #ff6b6b;">
+                                <div style="font-size: 24px; font-weight: bold; color: #ff6b6b;">{{ getExpiredCount() }}</div>
+                                <div style="font-size: 14px; opacity: 0.9;">已過期項目</div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 20px; opacity: 0.7; font-size: 14px;">
+                            點擊上方項目可直接跳轉到對應的管理頁面
+                        </p>
                     </div>
                 </div>
 
@@ -2286,15 +2373,37 @@ function getVideoType($extension) {
                     expiringFoods: []
                 }
             },
+            created() {
+                // 確保初始狀態正確
+                this.showMobileMenu = false;
+            },
             mounted() {
+                // 確保手機選單初始狀態正確
+                this.showMobileMenu = false;
+                
                 this.loadImages();
                 this.loadVideos();
                 this.loadSubscriptions();
                 this.loadFoods();
+                
                 // 初始化完成後計算儀表板統計
                 setTimeout(() => {
                     this.calculateDashboardStats();
                 }, 1000);
+                
+                // 添加點擊外部關閉選單的事件監聽器
+                document.addEventListener('click', this.handleDocumentClick);
+                
+                // 添加 ESC 鍵關閉選單的事件監聽器
+                document.addEventListener('keydown', this.handleKeyDown);
+            },
+            beforeUnmount() {
+                // 清理事件監聽器
+                document.removeEventListener('click', this.handleDocumentClick);
+                document.removeEventListener('keydown', this.handleKeyDown);
+                
+                // 恢復 body 滾動
+                document.body.style.overflow = '';
             },
             methods: {
                 getPageTitle() {
@@ -2808,7 +2917,7 @@ function getVideoType($extension) {
                     today.setHours(0, 0, 0, 0);
                     const sevenDaysLater = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
                     
-                    // 獲取即將到期的訂閱 (7天內)
+                    // 獲取即將到期的訂閱 (7天內，包含已過期的)
                     this.expiringSubscriptions = this.subscriptions.filter(subscription => {
                         if (!subscription.nextdate || subscription.nextdate === '0000-00-00') return false;
                         
@@ -2821,14 +2930,15 @@ function getVideoType($extension) {
                         
                         if (isNaN(date.getTime()) || date.getFullYear() === 1970) return false;
                         
-                        return date >= today && date <= sevenDaysLater;
+                        // 包含已過期和7天內到期的項目
+                        return date <= sevenDaysLater;
                     }).sort((a, b) => {
                         const dateA = new Date(a.nextdate + 'T00:00:00');
                         const dateB = new Date(b.nextdate + 'T00:00:00');
                         return dateA - dateB;
                     });
                     
-                    // 獲取即將到期的食品 (7天內)
+                    // 獲取即將到期的食品 (7天內，包含已過期的)
                     this.expiringFoods = this.foods.filter(food => {
                         if (!food.todate || food.todate === '0000-00-00') return false;
                         
@@ -2841,7 +2951,8 @@ function getVideoType($extension) {
                         
                         if (isNaN(date.getTime()) || date.getFullYear() === 1970) return false;
                         
-                        return date >= today && date <= sevenDaysLater;
+                        // 包含已過期和7天內到期的項目
+                        return date <= sevenDaysLater;
                     }).sort((a, b) => {
                         const dateA = new Date(a.todate + 'T00:00:00');
                         const dateB = new Date(b.todate + 'T00:00:00');
@@ -2869,11 +2980,77 @@ function getVideoType($extension) {
                     const diffTime = date - today;
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                     
-                    return Math.max(0, diffDays);
+                    return diffDays; // 允許負數，表示已過期
+                },
+                getDaysText(dateString) {
+                    const days = this.getDaysUntilExpiry(dateString);
+                    if (days < 0) {
+                        return `已過期${Math.abs(days)}天`;
+                    } else if (days === 0) {
+                        return '今天到期';
+                    } else {
+                        return `${days}天後`;
+                    }
+                },
+                async refreshDashboard() {
+                    try {
+                        // 重新載入所有數據
+                        await Promise.all([
+                            this.loadSubscriptions(),
+                            this.loadFoods(),
+                            this.loadImages()
+                        ]);
+                        
+                        // 重新計算統計數據
+                        this.calculateDashboardStats();
+                        
+                        // 顯示成功訊息
+                        alert('儀表板數據已更新！');
+                    } catch (error) {
+                        console.error('刷新儀表板失敗:', error);
+                        alert('刷新失敗，請稍後再試');
+                    }
+                },
+                getExpiredCount() {
+                    let expiredCount = 0;
+                    
+                    // 計算已過期的訂閱
+                    this.expiringSubscriptions.forEach(subscription => {
+                        if (this.getDaysUntilExpiry(subscription.nextdate) < 0) {
+                            expiredCount++;
+                        }
+                    });
+                    
+                    // 計算已過期的食品
+                    this.expiringFoods.forEach(food => {
+                        if (this.getDaysUntilExpiry(food.todate) < 0) {
+                            expiredCount++;
+                        }
+                    });
+                    
+                    return expiredCount;
+                },
+                handleDocumentClick(event) {
+                    // 如果點擊的不是選單按鈕或選單內容，則關閉選單
+                    const mobileMenuToggle = event.target.closest('.mobile-menu-toggle');
+                    const mobileMenuContent = event.target.closest('.mobile-menu-content');
+                    
+                    if (!mobileMenuToggle && !mobileMenuContent && this.showMobileMenu) {
+                        this.showMobileMenu = false;
+                    }
+                },
+                handleKeyDown(event) {
+                    // ESC 鍵關閉選單
+                    if (event.key === 'Escape' && this.showMobileMenu) {
+                        this.showMobileMenu = false;
+                    }
                 }
             },
             watch: {
                 currentPage(newPage) {
+                    // 切換頁面時關閉手機選單
+                    this.showMobileMenu = false;
+                    
                     if (newPage === 'gallery') {
                         this.loadImages();
                     } else if (newPage === 'videos') {
@@ -2884,6 +3061,14 @@ function getVideoType($extension) {
                         this.loadFoods();
                     } else if (newPage === 'dashboard') {
                         this.calculateDashboardStats();
+                    }
+                },
+                showMobileMenu(newValue) {
+                    // 當選單狀態改變時，控制 body 的滾動
+                    if (newValue) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = '';
                     }
                 }
             }
