@@ -1030,6 +1030,11 @@ function getVideoType($extension) {
             min-width: 50px;
             text-align: center;
             outline: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            touch-action: manipulation;
         }
 
         .mobile-menu-toggle:hover {
@@ -1057,14 +1062,20 @@ function getVideoType($extension) {
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
             pointer-events: none;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
 
         .mobile-menu.show {
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
+        }
+
+        .mobile-menu.show .mobile-menu-content {
+            transform: translateX(0);
         }
 
         .mobile-menu-content {
@@ -1076,18 +1087,13 @@ function getVideoType($extension) {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
             box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
-            animation: slideIn 0.3s ease-out;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-out;
             overflow-y: auto;
+            overflow-x: hidden;
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-            }
-            to {
-                transform: translateX(0);
-            }
-        }
+
 
         .mobile-menu-header {
             display: flex;
@@ -1205,10 +1211,16 @@ function getVideoType($extension) {
                 display: block !important;
                 background: rgba(255, 255, 255, 0.2) !important;
                 border: 2px solid rgba(255, 255, 255, 0.3) !important;
+                position: relative;
+                z-index: 1001;
             }
             
             .mobile-menu-toggle:hover {
                 background: rgba(255, 255, 255, 0.3) !important;
+            }
+            
+            .mobile-menu-toggle:active {
+                transform: scale(0.95);
             }
             
             .main-title {
@@ -1573,43 +1585,43 @@ function getVideoType($extension) {
                 </div>
                 
                 <!-- 手機版漢堡選單 -->
-                <button class="mobile-menu-toggle" @click="showMobileMenu = !showMobileMenu" type="button">
+                <button class="mobile-menu-toggle" @click.stop="toggleMobileMenu" type="button">
                     ☰
                 </button>
             </nav>
 
             <!-- 手機版選單 -->
-            <div class="mobile-menu" :class="{ show: showMobileMenu }" v-show="showMobileMenu" @click.self="showMobileMenu = false">
+            <div class="mobile-menu" :class="{ show: showMobileMenu }" v-show="showMobileMenu" @click.self="closeMobileMenu">
                 <div class="mobile-menu-content" @click.stop>
                     <div class="mobile-menu-header">
                         <div style="display: flex; align-items: center;">
                             <div class="logo-icon" style="margin-right: 10px;">🤖</div>
                             <span style="font-weight: bold;">鋒兄AI系統</span>
                         </div>
-                        <button class="mobile-menu-close" @click="showMobileMenu = false">✕</button>
+                        <button class="mobile-menu-close" @click.stop="closeMobileMenu">✕</button>
                     </div>
                     
-                    <div class="mobile-nav-item" :class="{ active: currentPage === 'home' }" @click="currentPage = 'home'; showMobileMenu = false">
+                    <div class="mobile-nav-item" :class="{ active: currentPage === 'home' }" @click.stop="navigateToPage('home')">
                         <span class="mobile-nav-icon">🏠</span>
                         首頁
                     </div>
-                    <div class="mobile-nav-item" :class="{ active: currentPage === 'dashboard' }" @click="currentPage = 'dashboard'; showMobileMenu = false">
+                    <div class="mobile-nav-item" :class="{ active: currentPage === 'dashboard' }" @click.stop="navigateToPage('dashboard')">
                         <span class="mobile-nav-icon">📊</span>
                         儀表板
                     </div>
-                    <div class="mobile-nav-item" :class="{ active: currentPage === 'gallery' }" @click="currentPage = 'gallery'; showMobileMenu = false">
+                    <div class="mobile-nav-item" :class="{ active: currentPage === 'gallery' }" @click.stop="navigateToPage('gallery')">
                         <span class="mobile-nav-icon">🖼️</span>
                         圖片庫
                     </div>
-                    <div class="mobile-nav-item" :class="{ active: currentPage === 'videos' }" @click="currentPage = 'videos'; showMobileMenu = false">
+                    <div class="mobile-nav-item" :class="{ active: currentPage === 'videos' }" @click.stop="navigateToPage('videos')">
                         <span class="mobile-nav-icon">🎬</span>
                         影片庫
                     </div>
-                    <div class="mobile-nav-item" :class="{ active: currentPage === 'subscriptions' }" @click="currentPage = 'subscriptions'; showMobileMenu = false">
+                    <div class="mobile-nav-item" :class="{ active: currentPage === 'subscriptions' }" @click.stop="navigateToPage('subscriptions')">
                         <span class="mobile-nav-icon">📋</span>
                         訂閱管理
                     </div>
-                    <div class="mobile-nav-item" :class="{ active: currentPage === 'foods' }" @click="currentPage = 'foods'; showMobileMenu = false">
+                    <div class="mobile-nav-item" :class="{ active: currentPage === 'foods' }" @click.stop="navigateToPage('foods')">
                         <span class="mobile-nav-icon">🍽️</span>
                         食品管理
                     </div>
@@ -2370,7 +2382,8 @@ function getVideoType($extension) {
                     },
                     showMobileMenu: false,
                     expiringSubscriptions: [],
-                    expiringFoods: []
+                    expiringFoods: [],
+                    menuToggleTimeout: null
                 }
             },
             created() {
@@ -2392,6 +2405,7 @@ function getVideoType($extension) {
                 }, 1000);
                 
                 // 添加點擊外部關閉選單的事件監聽器
+                document.addEventListener('click', this.handleDocumentClick);
                 document.addEventListener('click', this.handleDocumentClick);
                 
                 // 添加 ESC 鍵關閉選單的事件監聽器
@@ -3031,25 +3045,55 @@ function getVideoType($extension) {
                     return expiredCount;
                 },
                 handleDocumentClick(event) {
+                    // 如果選單未開啟，不需要處理
+                    if (!this.showMobileMenu) return;
+                    
                     // 如果點擊的不是選單按鈕或選單內容，則關閉選單
                     const mobileMenuToggle = event.target.closest('.mobile-menu-toggle');
                     const mobileMenuContent = event.target.closest('.mobile-menu-content');
+                    const mobileMenu = event.target.closest('.mobile-menu');
                     
-                    if (!mobileMenuToggle && !mobileMenuContent && this.showMobileMenu) {
-                        this.showMobileMenu = false;
+                    // 只有點擊選單外部時才關閉
+                    if (!mobileMenuToggle && !mobileMenuContent && mobileMenu) {
+                        this.closeMobileMenu();
                     }
                 },
                 handleKeyDown(event) {
                     // ESC 鍵關閉選單
                     if (event.key === 'Escape' && this.showMobileMenu) {
-                        this.showMobileMenu = false;
+                        this.closeMobileMenu();
                     }
+                },
+                toggleMobileMenu() {
+                    // 防抖：防止快速點擊
+                    if (this.menuToggleTimeout) {
+                        clearTimeout(this.menuToggleTimeout);
+                    }
+                    
+                    this.menuToggleTimeout = setTimeout(() => {
+                        this.showMobileMenu = !this.showMobileMenu;
+                        this.menuToggleTimeout = null;
+                    }, 100);
+                },
+                closeMobileMenu() {
+                    if (this.menuToggleTimeout) {
+                        clearTimeout(this.menuToggleTimeout);
+                        this.menuToggleTimeout = null;
+                    }
+                    this.showMobileMenu = false;
+                },
+                navigateToPage(page) {
+                    this.currentPage = page;
+                    // 延遲關閉選單，確保導航完成
+                    setTimeout(() => {
+                        this.closeMobileMenu();
+                    }, 150);
                 }
             },
             watch: {
                 currentPage(newPage) {
                     // 切換頁面時關閉手機選單
-                    this.showMobileMenu = false;
+                    this.closeMobileMenu();
                     
                     if (newPage === 'gallery') {
                         this.loadImages();
