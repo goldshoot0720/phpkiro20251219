@@ -131,6 +131,9 @@ function getVideoType($extension) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>鋒兄AI資訊系統</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.svg">
     <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.js"></script>
     <script>
         // 檢查 Vue 是否正確載入
