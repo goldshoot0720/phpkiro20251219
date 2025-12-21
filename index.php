@@ -2163,7 +2163,7 @@ function getVideoType($extension) {
                 </div>
 
                 <!-- 新增/編輯訂閱模態框 -->
-                <div class="modal-overlay" v-if="(showAddSubscriptionModal || showEditSubscriptionModal) && currentPage === 'subscriptions' && currentPage !== 'home'" @click="closeModals">
+                <div class="modal-overlay" v-if="(showAddSubscriptionModal || showEditSubscriptionModal) && currentPage === 'subscriptions'" @click="closeModals">
                     <div class="modal-content" @click.stop>
                         <div class="modal-header">
                             <h3>{{ showEditSubscriptionModal ? '編輯訂閱' : '新增訂閱' }}</h3>
@@ -2281,7 +2281,7 @@ function getVideoType($extension) {
                 </div>
 
                 <!-- 新增/編輯食品模態框 -->
-                <div class="modal-overlay" v-if="(showAddFoodModal || showEditFoodModal) && currentPage === 'foods' && currentPage !== 'home'" @click="closeFoodModals">
+                <div class="modal-overlay" v-if="(showAddFoodModal || showEditFoodModal) && currentPage === 'foods'" @click="closeFoodModals">
                     <div class="modal-content" @click.stop>
                         <div class="modal-header">
                             <h3>{{ showEditFoodModal ? '編輯食品' : '新增食品' }}</h3>
@@ -3166,7 +3166,7 @@ function getVideoType($extension) {
                     this.currentPage = 'subscriptions';
                     // 等待頁面切換完成後再開啟模態框
                     setTimeout(() => {
-                        if (this.currentPage === 'subscriptions' && this.currentPage !== 'home') {
+                        if (this.currentPage === 'subscriptions') {
                             this.showAddSubscriptionModal = true;
                         }
                     }, 150);
@@ -3178,7 +3178,7 @@ function getVideoType($extension) {
                     this.currentPage = 'foods';
                     // 等待頁面切換完成後再開啟模態框
                     setTimeout(() => {
-                        if (this.currentPage === 'foods' && this.currentPage !== 'home') {
+                        if (this.currentPage === 'foods') {
                             this.showAddFoodModal = true;
                         }
                     }, 150);
